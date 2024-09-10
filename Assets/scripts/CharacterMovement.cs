@@ -25,12 +25,25 @@ namespace Cinemachine.Examples
         private Vector2 input;
         private float velocity;
 
+        // Reference to WalkingSound component
+        private WalkingSound walkingSound;
+
+        // Walking sound cooldown variables
+        public float soundCooldown = 0.5f; // Delay between steps in seconds
+        private float soundTimer = 0f; // Tracks the time since the last step sound
+
+        // Speed threshold for playing walking sound
+        public float walkSpeedThreshold = 0.1f;
+
         // Use this for initialization
         void Start()
         {
             anim = GetComponent<Animator>();
             _rigidbody = GetComponent<Rigidbody>();
             mainCamera = Camera.main;
+
+            // Get the WalkingSound component attached to the character
+            walkingSound = GetComponent<WalkingSound>();
         }
 
         // Update is called once per frame
@@ -49,6 +62,20 @@ namespace Cinemachine.Examples
             speed = Mathf.Clamp(speed, 0f, 1f);
             speed = Mathf.SmoothDamp(anim.GetFloat("Speed"), speed, ref velocity, 0.1f);
             anim.SetFloat("Speed", speed);
+
+            // Only trigger walking sound if the character is moving above a small threshold
+            if (speed > walkSpeedThreshold && walkingSound != null)
+            {
+                // Increment the sound timer
+                soundTimer += Time.deltaTime;
+
+                // Play sound only if enough time has passed since the last sound
+                if (soundTimer >= soundCooldown)
+                {
+                    walkingSound.playSound();
+                    soundTimer = 0f; // Reset the timer after playing the sound
+                }
+            }
 
             // Set sprinting
             isSprinting = ((Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero);
