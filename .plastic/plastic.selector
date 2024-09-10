@@ -1,4 +1,4 @@
 repository "homebymarch@Ferj@cloud"
   path "/"
-    br "/main"
-    co "/main"
+    smartbranch "/dev/player-movement"    
+     
