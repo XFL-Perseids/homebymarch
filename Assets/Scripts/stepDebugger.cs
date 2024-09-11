@@ -8,7 +8,6 @@ using UnityEngine.Android;
 using UnityEngine.InputSystem;
 
 public class TrackerOfSteps : MonoBehaviour
-//THIS DOES WAY TOO MUCH STUFF REMIND ME TO REFACTOR THIS AT SPRINT'S END
 {
 
 
@@ -18,64 +17,63 @@ public class TrackerOfSteps : MonoBehaviour
    long stepOffset;
    string stepJsonFilePath;
    private int numberOfSteps;
-   private int loadedNumberOfSteps = 0;
-   private int sessionNumberOfSteps;
+  //  legacy code 
+  //  private int loadedNumberOfSteps = 0; 
+  //  private int sessionNumberOfSteps;
    void Start()
    {
       messageText.text = "??????";
-      sessionNumberOfSteps = 0;
+
        stepJsonFilePath = Application.persistentDataPath + "/stepData.json";
        if (Application.isEditor) { return; }
        RequestPermission(); 
        InputSystem.EnableDevice(StepCounter.current);
        messageText.text = "Now tracking steps. If you're still seeing this, Xyxar fucked up.";
-       if (System.IO.File.Exists(stepJsonFilePath)){
+      //  if (System.IO.File.Exists(stepJsonFilePath)){
         
         
-        loadStepData();
-         // loads the thing
-        updateStepsText(); // sets counter to the loaded step count
+      //   loadStepData();
+      //    // loads the thing
 
-       }
+
+      //  }
        
    }
 
    void Update()
    {
        if (Application.isEditor) { return; }
-      sessionNumberOfSteps = StepCounter.current.stepCounter.ReadValue(); // 
-      numberOfSteps = sessionNumberOfSteps; // not += because it would go from +1 to +2 etc instead of +1 constant per step
+      numberOfSteps = StepCounter.current.stepCounter.ReadValue(); // 
        if (stepOffset == 0)
        {
-           stepOffset = sessionNumberOfSteps;
+           stepOffset = numberOfSteps;
            DEBUGTEXT.text = ("Step offset " + stepOffset);
        }
        else
        {
-           updateStepsText();
-           saveStepData();
+           messageText.text = "Steps: " + numberOfSteps.ToString();
        }
    }
 
-   void updateStepsText(){
-    messageText.text = "Steps: " + (sessionNumberOfSteps + loadedNumberOfSteps).ToString();
-   }
+  //  void updateStepsText(){
+  //   messageText.text = "Steps: " + (sessionNumberOfSteps + loadedNumberOfSteps).ToString() +
+  //  }
 
-   void saveStepData(){
-    StepData data = new StepData();
-    data.numberOfSteps = numberOfSteps;
-    string stepCountString = JsonUtility.ToJson(data);
+  //  void saveStepData(){
+  //   StepData data = new StepData();
+  //   data.numberOfSteps = numberOfSteps;
+  //   string stepCountString = JsonUtility.ToJson(data);
 
 
-    System.IO.File.WriteAllText(stepJsonFilePath, stepCountString);
-   }
+  //   System.IO.File.WriteAllText(stepJsonFilePath, stepCountString);
+  //  }
 
-   void loadStepData(){
-    string stringCountJson = System.IO.File.ReadAllText(stepJsonFilePath);
+  //  void loadStepData(){
+  //   string stringCountJson = System.IO.File.ReadAllText(stepJsonFilePath);
 
-    loadedNumberOfSteps = JsonUtility.FromJson<StepData>(stringCountJson).numberOfSteps;
-    updateStepsText();
-   }
+  //   loadedNumberOfSteps = JsonUtility.FromJson<StepData>(stringCountJson).numberOfSteps;
+  //   updateStepsText();
+  //  }
 
 
    async void RequestPermission()
