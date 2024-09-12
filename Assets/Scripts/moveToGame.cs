@@ -11,15 +11,5 @@ public class moveToGame : MonoBehaviour
         //change this to the actual game when it's done thx
         
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
