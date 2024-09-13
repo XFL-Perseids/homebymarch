@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class moveToGame : MonoBehaviour
+public class moveToGame2 : MonoBehaviour
 {
     private void Awake()
     {
