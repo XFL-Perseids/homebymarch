@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI; // Required to access UI components
-
+using UnityEngine.UI; // Required to access UI components // Required to access UI components
+using TMPro;   
 public class PlayerMana : MonoBehaviour
 {
     [Header("Mana Settings")]
@@ -8,7 +8,9 @@ public class PlayerMana : MonoBehaviour
     public float currentMana;    // Current Mana value
 
     [Header("UI Settings")]
-    public Image ManaBarImage;   // Reference to the UI Image for the Mana bar
+    public Image ManaBarImage; 
+    
+    public TextMeshProUGUI ManaText;    // Reference to the UI Image for the Mana bar
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +40,7 @@ public class PlayerMana : MonoBehaviour
 
         // Update the Mana bar UI after taking damage
         UpdateManaBar();
+        UpdateManaText();
 
         // Check if player Mana reaches zero
         if (currentMana <= 0)
@@ -56,6 +59,14 @@ public class PlayerMana : MonoBehaviour
         if (ManaBarImage != null)
         {
             ManaBarImage.fillAmount = fillAmount;
+        }
+    }
+    void UpdateManaText()
+    {
+        // Display the current and max Mana as a string (e.g., "90/100")
+        if (ManaText != null)
+        {
+            ManaText.text = currentMana + "/" + maxMana;
         }
     }
 
