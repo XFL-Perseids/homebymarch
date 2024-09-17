@@ -16,9 +16,10 @@ public class TrackerOfSteps : MonoBehaviour
 
    long stepOffset;
    string stepJsonFilePath;
-   private int numberOfSteps;
+   private int numberOfSteps = 0;
   //  legacy code 
-  //  private int loadedNumberOfSteps = 0; 
+   private int loadedNumberOfSteps = 0; 
+
   //  private int sessionNumberOfSteps;
    void Start()
    {
@@ -28,7 +29,9 @@ public class TrackerOfSteps : MonoBehaviour
        if (Application.isEditor) { return; }
        RequestPermission(); 
        InputSystem.EnableDevice(StepCounter.current);
-       messageText.text = "Now tracking steps. If you're still seeing this, Xyxar fucked up.";
+       loadStepData();
+       messageText.text = "Now tracking steps. If you're still seeing this, something went wrong.";
+       updateSteps();
       //  if (System.IO.File.Exists(stepJsonFilePath)){
         
         
@@ -51,29 +54,44 @@ public class TrackerOfSteps : MonoBehaviour
        }
        else
        {
-           messageText.text = "Steps: " + numberOfSteps.ToString();
+        updateSteps();
+        saveStepData();
        }
    }
 
-  //  void updateStepsText(){
-  //   messageText.text = "Steps: " + (sessionNumberOfSteps + loadedNumberOfSteps).ToString() +
-  //  }
-
-  //  void saveStepData(){
-  //   StepData data = new StepData();
-  //   data.numberOfSteps = numberOfSteps;
-  //   string stepCountString = JsonUtility.ToJson(data);
 
 
-  //   System.IO.File.WriteAllText(stepJsonFilePath, stepCountString);
-  //  }
+  void updateSteps(){
+    // if there arent any saved steps, it's just the reading of the pedometer since app started
+    if (loadedNumberOfSteps == 0){
+           messageText.text = "Steps: " + numberOfSteps.ToString(); 
+        }
+        else{
+          // loaded is here in case phone restarts
+          messageText.text = "Steps: " + (numberOfSteps + loadedNumberOfSteps).ToString();
+        }
+  }
 
-  //  void loadStepData(){
-  //   string stringCountJson = System.IO.File.ReadAllText(stepJsonFilePath);
+   void saveStepData(){
+    StepData data = new StepData();
+    if (loadedNumberOfSteps == 0){
+    data.numberOfSteps = numberOfSteps;
+    }
+    else {
+      data.numberOfSteps = numberOfSteps + loadedNumberOfSteps;
+    }
+    string stepCountString = JsonUtility.ToJson(data);
 
-  //   loadedNumberOfSteps = JsonUtility.FromJson<StepData>(stringCountJson).numberOfSteps;
-  //   updateStepsText();
-  //  }
+
+    System.IO.File.WriteAllText(stepJsonFilePath, stepCountString);
+   }
+
+   void loadStepData(){
+    string stringCountJson = System.IO.File.ReadAllText(stepJsonFilePath);
+
+    loadedNumberOfSteps = JsonUtility.FromJson<StepData>(stringCountJson).numberOfSteps;
+    
+   }
 
 
    async void RequestPermission()
