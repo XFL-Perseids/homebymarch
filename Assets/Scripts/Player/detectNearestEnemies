@@ -8,9 +8,9 @@ public class EnemyDetector{
 
     public GameObject[] allEnemies;
     public GameObject nearestEnemy;
-    public float distanceFromPlayer {get; private set;};
+    private float distanceFromPlayer;
     private float angleFromPlayer;
-    private float nearestDistance = 10000;
+    public float nearestDistance {get; private set;}= 10000;
     private float attackAngle = 60f;
 
     void Start(){
