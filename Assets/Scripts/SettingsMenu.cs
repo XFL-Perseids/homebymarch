@@ -15,23 +15,23 @@ public class SettingsMenu : MonoBehaviour
         {
             if (settingsPanel)
             {
-                openSettings();
+                OpenSettings();
             }
             else
             {
-                exitSettings();
+                ExitSettings();
             }
         }
     }
 
-    public void openSettings()
+    public void OpenSettings()
     {
         settingsMenuUI.SetActive(true);
         Time.timeScale = 0f;
         settingsPanel = true;
     }
 
-    public void exitSettings()
+    public void ExitSettings()
     {
         settingsMenuUI.SetActive(false);
         Time.timeScale = 1f;

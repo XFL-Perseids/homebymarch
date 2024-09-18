@@ -40,7 +40,7 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = true;
     }
 
-    public void help()
+    public void Help()
     {
         Debug.Log("Help");
     }
