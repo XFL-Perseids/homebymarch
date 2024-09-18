@@ -47,7 +47,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Method to update the health bar UI
-    void UpdateHealthBar()
+    public void UpdateHealthBar()
     {
         // Calculate the fill amount (between 0 and 1) based on current health
         float fillAmount = currentHealth / maxHealth;
@@ -60,7 +60,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Method to update the health text UI
-    void UpdateHealthText()
+    public void UpdateHealthText()
     {
         // Display the current and max health as a string (e.g., "90/100")
         if (healthText != null)
