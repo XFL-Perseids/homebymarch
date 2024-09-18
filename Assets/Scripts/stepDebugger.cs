@@ -1,19 +1,31 @@
+using System;
 using TMPro;
 using UnityEngine;
-using System;
-using System.Collections;
 using UnityEngine.InputSystem;
 
 public class TrackerOfSteps : MonoBehaviour
 {
     [SerializeField] TMP_Text dailyStepsText, overallStepsText, DEBUGTEXT;
-    [SerializeField] SaveDataManager saveDataManager;  // Reference to SaveDataManager
 
-    private long stepOffset;
+    private long stepOffset = 0;
     private int numberOfSteps = 0;
     private int dailySteps = 0;
     private int overallSteps = 0;
     private DateTime lastTrackedDate;
+
+    private SaveDataManager saveDataManager;
+
+    void Awake()
+    {
+        // Initialize SaveDataManager
+        saveDataManager = FindObjectOfType<SaveDataManager>();
+
+        if (saveDataManager == null)
+        {
+            DEBUGTEXT.text = "SaveDataManager is missing.";
+            Debug.LogError("SaveDataManager not found.");
+        }
+    }
 
     void Start()
     {
@@ -28,34 +40,36 @@ public class TrackerOfSteps : MonoBehaviour
 
         LoadStepData();
         CheckNewDay();
-
-        updateSteps();
+        UpdateSteps();
     }
 
     void OnEnable()
     {
         if (Application.isEditor) { return; }
 
-        LoadStepData();  // Reload step data when panel is activated
-        updateSteps();   // Update the displayed step counts
+        LoadStepData();  // Reload step data when the script is enabled
+        UpdateSteps();   // Update the displayed step counts
     }
 
     void Update()
     {
         if (Application.isEditor) { return; }
 
-        numberOfSteps = StepCounter.current.stepCounter.ReadValue(); // Read step count from StepCounter
+        if (StepCounter.current != null)
+        {
+            numberOfSteps = StepCounter.current.stepCounter.ReadValue(); // Read step count from StepCounter
 
-        if (stepOffset == 0)
-        {
-            stepOffset = numberOfSteps;
-            DEBUGTEXT.text = "Step offset " + stepOffset;
-        }
-        else
-        {
-            // Update step counts
-            updateSteps();
-            SaveStepData();
+            if (stepOffset == 0)
+            {
+                stepOffset = numberOfSteps;
+                DEBUGTEXT.text = "Step offset: " + stepOffset;
+            }
+            else
+            {
+                // Update step counts
+                UpdateSteps();
+                SaveStepData();
+            }
         }
     }
 
@@ -70,7 +84,7 @@ public class TrackerOfSteps : MonoBehaviour
         }
     }
 
-    void updateSteps()
+    void UpdateSteps()
     {
         // Update daily and overall step counts based on loaded data
         int newSteps = numberOfSteps - (int)stepOffset;
@@ -84,7 +98,7 @@ public class TrackerOfSteps : MonoBehaviour
         }
 
         // Update UI text for daily and overall step counts
-        dailyStepsText.text = "Daily Steps: " + dailySteps;
+        dailyStepsText.text = "Daily Stepss: " + dailySteps;
         overallStepsText.text = "Overall Steps: " + overallSteps;
     }
 
@@ -109,17 +123,17 @@ public class TrackerOfSteps : MonoBehaviour
         lastTrackedDate = DateTime.Parse(data.lastTrackedDate);
     }
 
-    async void RequestPermission()
-    {
-#if UNITY_EDITOR
-        DEBUGTEXT.text = "Editor Platform";
-#endif
-#if UNITY_ANDROID
+   async void RequestPermission()
+{
+    #if UNITY_EDITOR
+        DEBUGTEXT.text = "Editor Platform - No permissions needed.";
+    #else
+        // Request permissions for Android asynchronously
         AndroidRuntimePermissions.Permission stepTrackerResult = await AndroidRuntimePermissions.RequestPermissionAsync("android.permission.ACTIVITY_RECOGNITION");
         AndroidRuntimePermissions.Permission fileManagementResult = await AndroidRuntimePermissions.RequestPermissionAsync("android.permission.MANAGE_EXTERNAL_STORAGE");
+        AndroidRuntimePermissions.Permission fileManagementWriteResult = await AndroidRuntimePermissions.RequestPermissionAsync("android.permission.WRITE_EXTERNAL_STORAGE");
 
-        if (stepTrackerResult == AndroidRuntimePermissions.Permission.Granted &&
-            fileManagementResult == AndroidRuntimePermissions.Permission.Granted)
+        if (stepTrackerResult == AndroidRuntimePermissions.Permission.Granted && fileManagementResult == AndroidRuntimePermissions.Permission.Granted)
         {
             DEBUGTEXT.text = "Permissions granted.";
         }
@@ -127,6 +141,7 @@ public class TrackerOfSteps : MonoBehaviour
         {
             DEBUGTEXT.text = "Permission denied: " + stepTrackerResult;
         }
-#endif
-    }
+    #endif
+}
+
 }
