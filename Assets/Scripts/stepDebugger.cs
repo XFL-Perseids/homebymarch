@@ -10,7 +10,7 @@ public class TrackerOfSteps : MonoBehaviour
     private long stepOffset = 0;
     private int numberOfSteps = 0;
     private int dailySteps = 0;
-    private int overallSteps = 0;
+    public int overallSteps{get; private set;} = 0;
     private DateTime lastTrackedDate;
 
     private SaveDataManager saveDataManager;

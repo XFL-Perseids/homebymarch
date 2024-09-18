@@ -15,8 +15,12 @@ public class PlayerData
     public int health;
     public int attack;
     public int defense;
+    public int attackSpeed;
     public int experience;
+    public int mana;
+    public int attackRange;
     public Inventory inventory;
+    public Vector3 position;
 
     public PlayerData()
     {
@@ -26,7 +30,9 @@ public class PlayerData
         health = 100;
         attack = 10;
         defense = 5;
+        mana = 20;
         experience = 0;
+        attackRange = 50;
         inventory = new Inventory();
     }
 

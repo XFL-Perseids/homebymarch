@@ -1,18 +1,33 @@
+// using Math;
+using UnityEngine;
+
 namespace MyGame.Enemies
 {
 
 
-public class Enemy
+public abstract class Enemy
 {
     public string enemyName;
     public int health;
     public int attackPower;
+    public int defense;
+    public float attackSpeed;
+    public float attackRange;
+    public Vector3 position;
+    private bool isAttackInCooldown = false;
+    public PlayerData player;
 
-    public Enemy(string name, int hp, int atk)
+    public Enemy(string name, int hp, int atk, int def, float atkSpd, float range)
     {
         enemyName = name;
         health = hp;
         attackPower = atk;
+        defense = def;
+        attackSpeed = atkSpd;
+        attackRange = range;
+
+
+        
     }
 
     public void TakeDamage(int damage)
@@ -24,9 +39,32 @@ public class Enemy
         }
     }
 
+    private void Attack(){
+
+
+        // if (Vector3.distance(this.position, player.position)){
+        // // attack logic here
+        // int damage = Math.Round((int)Math.Pow(this.attackPower, 2) / player.defense);
+        // player.TakeDamage(damage);
+        // CooldownAttack();
+        // }
+        
+        
+
+    }
+
+    private void CooldownAttack(){
+        
+
+    }
+
     private void Die()
     {
         // Logic for when the enemy dies
+    }
+
+    void FixedUpdate(){
+        
     }
 }
 }
