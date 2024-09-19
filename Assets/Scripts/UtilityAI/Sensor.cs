@@ -9,7 +9,7 @@ namespace UtilityAI{
         
         public float detectionRadius;
         public List<string> targetTags = new();
-        SphereCollider sphereCollider;
+        public SphereCollider sphereCollider;
 
 
         readonly List<Transform> detectedCreatures = new(10);
@@ -17,7 +17,7 @@ namespace UtilityAI{
         void Start(){
             sphereCollider = GetComponent<SphereCollider>();
             sphereCollider.isTrigger = true;
-            sphereCollider.radius = 100;
+            sphereCollider.radius = detectionRadius;
         }
 
         void OnTriggerEnter(Collider other){

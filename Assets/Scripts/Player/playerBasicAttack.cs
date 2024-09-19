@@ -14,7 +14,15 @@ class PlayerBasicAttack : MonoBehaviour {
     public Enemy enemy;
 
     [Header("UI Settings")]
-    public Image attackButtonImage;
+    public Button attackButton;
+
+    void Start(){
+        attackButton.onClick.AddListener(() => OnButtonClick());
+    }
+
+    void OnButtonClick(){
+        Attack();
+    }
 
     void Attack(){
 

@@ -16,16 +16,14 @@ namespace MyGame.Player{
         public PlayerData playerData;
         
 
-        public float detectionRadius;
-        SphereCollider sphereCollider;
 
 
         readonly List<Transform> detectedCreatures = new(10);
         
         void Start(){
-            sphereCollider = GetComponent<SphereCollider>();
-            sphereCollider.isTrigger = true;
-            sphereCollider.radius = playerData.attackRange;
+
+
+            detectionRadius = playerData.attackRange;
         }
 
         void OnTriggerEnter(Collider other){
