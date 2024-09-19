@@ -20,7 +20,7 @@ public class PlayerData
     public int mana;
     public int attackRange;
     public Inventory inventory;
-    public Vector3 position;
+    public Transform transform;
 
     public PlayerData()
     {

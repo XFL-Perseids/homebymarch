@@ -3,27 +3,36 @@ using Unity;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UtilityAI;
+using MyGame.Enemies;
+
 
 
 class PlayerBasicAttack : MonoBehaviour {
     
-    public GameObject closestEnemy;
-    private EnemyDetector enemyDetector;
+    public Sensor enemyDetector;
+    public Enemy enemy;
 
-    private PlayerData playerData;
-    public int attackRange = playerData.attackRange;// adjust if needed
-
-    
+    [Header("UI Settings")]
+    public Image attackButtonImage;
 
     void Attack(){
 
-        closestEnemy = enemyDetector.closestEnemy;
-        if (enemyDetector.nearestDistance <= attackRange){
-            ///animations
-            closestEnemy.TakeDamage(playerData.attack);
-            Debug.Log("hit");
-        }
+        (Transform target, float angle) = enemyDetector.GetClosestTarget("Enemy");
+        Debug.Log("getting enemy");
+
+        enemy = target.GetComponent<Enemy>();
+
+        if (angle < 60 / 2f){
+            // animation to turn towards target. set a delay?
+        } 
+
+    
         
 
+        enemy.TakeDamage(5);
+        Debug.Log("hit");
+        
+        //trigger cooldown here
     }
 }
