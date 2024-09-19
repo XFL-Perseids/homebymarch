@@ -1,131 +1,132 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Cinemachine.Examples
-{
+namespace HomeByMarch {
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(Rigidbody))]
-    public class CharacterMovement2 : MonoBehaviour
-    {
-        public bool useCharacterForward = false;
-        public bool lockToCameraForward = false;
-        public float turnSpeed = 10f;
-        public KeyCode sprintJoystick = KeyCode.JoystickButton2;
-        public KeyCode sprintKeyboard = KeyCode.Space;
+    public class PlayerController : MonoBehaviour {
+        [Header("Input Settings")]
+        [SerializeField] FixedJoystick joystick;
+        [SerializeField] KeyCode sprintJoystick = KeyCode.JoystickButton2;
+        [SerializeField] KeyCode sprintKeyboard = KeyCode.Space;
 
-        public FixedJoystick joystick; // Add the joystick reference
-        public float moveSpeed = 5f; // Movement speed
-        private Rigidbody _rigidbody;
-        private Animator anim;
-        private Camera mainCamera;
-        private Vector3 targetDirection;
+        [Header("Movement Settings")]
+        [SerializeField] float moveSpeed = 5f;
+        [SerializeField] float turnSpeed = 10f;
+        [SerializeField] bool useCharacterForward = false;
+        [SerializeField] bool lockToCameraForward = false;
 
-        private bool isSprinting = false;
-        private float turnSpeedMultiplier;
-        private float speed;
-        private Vector2 input;
-        private float velocity;
+        [Header("Sound Settings")]
+        [SerializeField] WalkingSound walkingSound;
+        [SerializeField] float soundCooldown = 0.5f; // Delay between steps
+        [SerializeField] float walkSpeedThreshold = 0.1f; // Speed threshold for walking sound
 
-        // Reference to WalkingSound component
-        private WalkingSound walkingSound;
+        // Private fields
+        Rigidbody rb;
+        Animator animator;
+        Camera mainCamera;
+        Vector3 targetDirection;
 
-        // Walking sound cooldown variables
-        public float soundCooldown = 0.5f; // Delay between steps in seconds
-        private float soundTimer = 0f; // Tracks the time since the last step sound
+        bool isSprinting = false;
+        float speed;
+        float turnSpeedMultiplier;
+        float velocity;
+        float soundTimer = 0f; // Timer to track walking sound
 
-        // Speed threshold for playing walking sound
-        public float walkSpeedThreshold = 0.1f;
+        Vector2 input;
 
-        // Use this for initialization
-        void Start()
-        {
-            anim = GetComponent<Animator>();
-            _rigidbody = GetComponent<Rigidbody>();
+        void Awake() {
+            // Initialize components
+            rb = GetComponent<Rigidbody>();
+            animator = GetComponent<Animator>();
             mainCamera = Camera.main;
 
-            // Get the WalkingSound component attached to the character
-            walkingSound = GetComponent<WalkingSound>();
+            if (walkingSound == null) {
+                walkingSound = GetComponent<WalkingSound>();
+            }
         }
 
-        // Update is called once per frame
-        void FixedUpdate()
-        {
+        void Start() {
+            // Enable input actions (if any)
+        }
+
+        void FixedUpdate() {
 #if ENABLE_LEGACY_INPUT_MANAGER
+            // Capture joystick input
             input.x = joystick.Horizontal;
             input.y = joystick.Vertical;
 
-            // Set speed based on joystick input
-            if (useCharacterForward)
+            // Calculate speed based on input
+            if (useCharacterForward) {
                 speed = Mathf.Abs(input.x) + input.y;
-            else
+            } else {
                 speed = Mathf.Abs(input.x) + Mathf.Abs(input.y);
-
-            speed = Mathf.Clamp(speed, 0f, 1f);
-            speed = Mathf.SmoothDamp(anim.GetFloat("Speed"), speed, ref velocity, 0.1f);
-            anim.SetFloat("Speed", speed);
-
-            // Only trigger walking sound if the character is moving above a small threshold
-            if (speed > walkSpeedThreshold && walkingSound != null)
-            {
-                // Increment the sound timer
-                soundTimer += Time.deltaTime;
-
-                // Play sound only if enough time has passed since the last sound
-                if (soundTimer >= soundCooldown)
-                {
-                    walkingSound.playSound();
-                    soundTimer = 0f; // Reset the timer after playing the sound
-                }
             }
 
-            // Set sprinting
-            isSprinting = ((Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero);
-            anim.SetBool("isSprinting", isSprinting);
+            speed = Mathf.Clamp(speed, 0f, 1f);
+            speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
+            animator.SetFloat("Speed", speed);
 
-            // Update target direction relative to camera
+            // Handle walking sound
+            HandleWalkingSound();
+
+            // Handle sprinting
+            isSprinting = (Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero;
+            animator.SetBool("isSprinting", isSprinting);
+
+            // Update target direction based on camera
             UpdateTargetDirection();
 
             // Move the player
-            _rigidbody.velocity = new Vector3(input.x * moveSpeed, _rigidbody.velocity.y, input.y * moveSpeed);
+            Vector3 moveDirection = new Vector3(input.x * moveSpeed, rb.velocity.y, input.y * moveSpeed);
+            rb.velocity = moveDirection;
 
-            if (input != Vector2.zero && targetDirection.magnitude > 0.1f)
-            {
-                Vector3 lookDirection = targetDirection.normalized;
-                Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
-                var differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
-                var eulerY = transform.eulerAngles.y;
-
-                if (differenceRotation < 0 || differenceRotation > 0) eulerY = freeRotation.eulerAngles.y;
-                var euler = new Vector3(0, eulerY, 0);
-
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
+            // Rotate the player
+            if (input != Vector2.zero && targetDirection.magnitude > 0.1f) {
+                HandleRotation();
             }
 #else
             InputSystemHelper.EnableBackendsWarningMessage();
 #endif
         }
 
-        public virtual void UpdateTargetDirection()
-        {
-            if (!useCharacterForward)
-            {
-                turnSpeedMultiplier = 1f;
-                var forward = mainCamera.transform.TransformDirection(Vector3.forward);
-                forward.y = 0;
-
-                // Get the right-facing direction of the referenceTransform
-                var right = mainCamera.transform.TransformDirection(Vector3.right);
-
-                // Determine the direction the player will face based on input
-                targetDirection = input.x * right + input.y * forward;
+        void HandleWalkingSound() {
+            // Play walking sound if moving
+            if (speed > walkSpeedThreshold && walkingSound != null) {
+                soundTimer += Time.deltaTime;
+                if (soundTimer >= soundCooldown) {
+                    walkingSound.playSound();
+                    soundTimer = 0f; // Reset timer
+                }
             }
-            else
-            {
-                turnSpeedMultiplier = 0.2f;
-                var forward = transform.TransformDirection(Vector3.forward);
-                forward.y = 0;
+        }
 
-                // Get the right-facing direction of the referenceTransform
-                var right = transform.TransformDirection(Vector3.right);
+        void HandleRotation() {
+            Vector3 lookDirection = targetDirection.normalized;
+            Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
+            float differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
+            float eulerY = transform.eulerAngles.y;
+
+            if (differenceRotation != 0) {
+                eulerY = freeRotation.eulerAngles.y;
+            }
+
+            Vector3 euler = new Vector3(0, eulerY, 0);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
+        }
+
+        public void UpdateTargetDirection() {
+            if (!useCharacterForward) {
+                turnSpeedMultiplier = 1f;
+                Vector3 forward = mainCamera.transform.TransformDirection(Vector3.forward);
+                forward.y = 0;
+                Vector3 right = mainCamera.transform.TransformDirection(Vector3.right);
+                targetDirection = input.x * right + input.y * forward;
+            } else {
+                turnSpeedMultiplier = 0.2f;
+                Vector3 forward = transform.TransformDirection(Vector3.forward);
+                forward.y = 0;
+                Vector3 right = transform.TransformDirection(Vector3.right);
                 targetDirection = input.x * right + Mathf.Abs(input.y) * forward;
             }
         }

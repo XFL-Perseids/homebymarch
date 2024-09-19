@@ -16,23 +16,29 @@ public class FollowPlayer : MonoBehaviour
     private bool isAttacking = false;
     private float lastAttackTime = 0f;
 
+    private float distance; // Cache distance to improve performance
+
     // Start is called before the first frame update
     void Start()
     {
         // Get the Animator component
         animator = GetComponent<Animator>();
+
+        // Optional: Set target based on mobile device resolution or specific settings
+        Application.targetFrameRate = 60; // Optimize for mobile, aim for 60 FPS
     }
 
-    void Update()
+    // Use FixedUpdate for smoother physics-based movement
+    void FixedUpdate()
     {
         // Calculate the distance to the player (target)
-        float distance = Vector3.Distance(transform.position, target.position);
+        distance = Vector3.Distance(transform.position, target.position);
 
         // Check if within follow range but not close enough to attack
         if (distance <= followRange && distance > attackRange && !isAttacking)
         {
             // Move and rotate towards the target
-            MoveTowardsTarget(distance);
+            MoveTowardsTarget();
         }
         else if (distance <= attackRange && Time.time - lastAttackTime > attackCooldown)
         {
@@ -47,11 +53,11 @@ public class FollowPlayer : MonoBehaviour
         }
     }
 
-    void MoveTowardsTarget(float distance)
+    void MoveTowardsTarget()
     {
         // Calculate movement and move towards the target
         Vector3 direction = (target.position - transform.position).normalized;
-        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.fixedDeltaTime);
 
         // Rotate to face the target
         if (direction != Vector3.zero)
