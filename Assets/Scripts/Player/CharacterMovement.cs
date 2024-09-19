@@ -14,8 +14,6 @@ namespace HomeByMarch {
         [SerializeField] float moveSpeed = 5f;
         [SerializeField] float turnSpeed = 10f;
         [SerializeField] bool useCharacterForward = false;
-        [SerializeField] bool lockToCameraForward = false;
-
         [Header("Sound Settings")]
         [SerializeField] WalkingSound walkingSound;
         [SerializeField] float soundCooldown = 0.5f; // Delay between steps
@@ -56,6 +54,21 @@ namespace HomeByMarch {
             input.x = joystick.Horizontal;
             input.y = joystick.Vertical;
 
+            // Handle movement logic
+            HandleMovement();
+
+            // Handle walking sound
+            HandleWalkingSound();
+
+            // Handle sprinting
+            isSprinting = (Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero;
+            animator.SetBool("isSprinting", isSprinting);
+#else
+            InputSystemHelper.EnableBackendsWarningMessage();
+#endif
+        }
+
+        void HandleMovement() {
             // Calculate speed based on input
             if (useCharacterForward) {
                 speed = Mathf.Abs(input.x) + input.y;
@@ -66,13 +79,6 @@ namespace HomeByMarch {
             speed = Mathf.Clamp(speed, 0f, 1f);
             speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
             animator.SetFloat("Speed", speed);
-
-            // Handle walking sound
-            HandleWalkingSound();
-
-            // Handle sprinting
-            isSprinting = (Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero;
-            animator.SetBool("isSprinting", isSprinting);
 
             // Update target direction based on camera
             UpdateTargetDirection();
@@ -85,9 +91,6 @@ namespace HomeByMarch {
             if (input != Vector2.zero && targetDirection.magnitude > 0.1f) {
                 HandleRotation();
             }
-#else
-            InputSystemHelper.EnableBackendsWarningMessage();
-#endif
         }
 
         void HandleWalkingSound() {
