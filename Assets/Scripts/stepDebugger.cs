@@ -98,6 +98,7 @@ public class TrackerOfSteps : MonoBehaviour
         }
 
         // Update UI text for daily and overall step counts
+        GameEventsManager.instance.stepEvents.stepAdded(); 
         dailyStepsText.text = "Daily Stepss: " + dailySteps;
         overallStepsText.text = "Overall Steps: " + overallSteps;
     }
