@@ -32,17 +32,34 @@ namespace HomeByMarch {
         float soundTimer = 0f; // Timer to track walking sound
 
         Vector2 input;
-
+        StateMachine stateMachine;
         void Awake() {
-            // Initialize components
-            rb = GetComponent<Rigidbody>();
-            animator = GetComponent<Animator>();
-            mainCamera = Camera.main;
+    rb = GetComponent<Rigidbody>();
+    animator = GetComponent<Animator>();
+    mainCamera = Camera.main;
 
-            if (walkingSound == null) {
-                walkingSound = GetComponent<WalkingSound>();
-            }
-        }
+    if (walkingSound == null) {
+        walkingSound = GetComponent<WalkingSound>();
+    }
+
+    if (rb == null || animator == null || mainCamera == null) {
+        Debug.LogError("One of the required components is not assigned or missing!");
+    }
+
+    // State machine and state initialization
+    stateMachine = new StateMachine();
+    var locomotionState = new LocomotionState(this, animator);
+    var sprintState = new JumpState(this, animator);
+    
+    At(locomotionState, sprintState, new FuncPredicate(() => isSprinting));
+    At(sprintState, locomotionState, new FuncPredicate(() => !isSprinting));
+    
+    stateMachine.SetState(locomotionState);
+}
+
+
+        void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from,to,condition);
+        void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to,condition);
 
         void Start() {
             // Enable input actions (if any)
@@ -55,7 +72,7 @@ namespace HomeByMarch {
             input.y = joystick.Vertical;
 
             // Handle movement logic
-            HandleMovement();
+            stateMachine.FixedUpdate();
 
             // Handle walking sound
             HandleWalkingSound();
@@ -68,7 +85,7 @@ namespace HomeByMarch {
 #endif
         }
 
-        void HandleMovement() {
+        public void HandleMovement() {
             // Calculate speed based on input
             if (useCharacterForward) {
                 speed = Mathf.Abs(input.x) + input.y;

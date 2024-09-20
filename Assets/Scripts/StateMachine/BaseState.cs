@@ -30,7 +30,7 @@ namespace HomeByMarch {
         }
 
         public virtual void OnExit() {
-            // noop
+            Debug.Log("BaseState.OnExit");
         }
     }
 }
