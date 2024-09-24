@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HomeByMarch {
     public class LocomotionState : BaseState {
-        public LocomotionState(PlayerControllers player, Animator animator) : base(player, animator) { }
+        public LocomotionState(PlayerController player, Animator animator) : base(player, animator) { }
         
         public override void OnEnter() {
             Debug.Log("LocomotionState.OnEnter");

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace HomeByMarch {
     public abstract class BaseState : IState {
-        protected readonly PlayerControllers player;
+        protected readonly PlayerController player;
         protected readonly Animator animator;
         
         protected static readonly int LocomotionHash = Animator.StringToHash("Locomotion");
@@ -12,7 +12,7 @@ namespace HomeByMarch {
         
         protected const float crossFadeDuration = 0.1f;
         
-        protected BaseState(PlayerControllers player, Animator animator) {
+        protected BaseState(PlayerController player, Animator animator) {
             this.player = player;
             this.animator = animator;
         }
