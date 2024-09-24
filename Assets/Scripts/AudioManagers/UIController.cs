@@ -9,22 +9,23 @@ public class UIController : MonoBehaviour
 
     public void MuteMusic()
     {
-        AudioManager.Instance.MuteMusic();   
-    }
-
-    public void MuteSFX()
-    {
-        AudioManager.Instance.MuteSFX();
+        MusicManager.Instance.MuteMusic();   
     }
 
     public void MusicVolume()
     {
-        AudioManager.Instance.MusicVolume(musicSlider.value);
+        MusicManager.Instance.MusicVolume(musicSlider.value);
     }
 
+
+    //sfx manager
+    public void MuteSFX()
+    {
+        SFXManager.Instance.MuteSFX();
+    }
     public void SFXVolume()
     {
-        AudioManager.Instance.SFXVolume(sfxSlider.value);
+        SFXManager.Instance.SFXVolume(sfxSlider.value);
     }
 
 }

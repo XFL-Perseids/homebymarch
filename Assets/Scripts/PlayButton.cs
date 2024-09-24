@@ -2,14 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class exitButton : MonoBehaviour
+public class PlayButton : MonoBehaviour
 {
-   public void exitGame()
+    public GameObject playButtonUI;
+    public void PlayGame()
     {
-        Application.Quit();
-        Debug.Log("Existing Game");
-
         SFXManager.PlaySFX(SoundTypes.Button);
     }
-    
+
 }

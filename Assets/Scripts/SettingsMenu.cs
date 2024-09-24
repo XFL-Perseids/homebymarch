@@ -29,6 +29,8 @@ public class SettingsMenu : MonoBehaviour
         settingsMenuUI.SetActive(true);
         Time.timeScale = 0f;
         settingsPanel = true;
+        
+        SFXManager.PlaySFX(SoundTypes.Button);
     }
 
     public void ExitSettings()
@@ -36,5 +38,7 @@ public class SettingsMenu : MonoBehaviour
         settingsMenuUI.SetActive(false);
         Time.timeScale = 1f;
         settingsPanel = false;
+        
+        SFXManager.PlaySFX(SoundTypes.Button);
     }
 }

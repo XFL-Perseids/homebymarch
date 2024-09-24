@@ -32,6 +32,8 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         GameIsPaused = false;
         Debug.Log("resume clicked");
+
+        SFXManager.PlaySFX(SoundTypes.Button);
     }
 
     public void Pause()
@@ -39,11 +41,15 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         GameIsPaused = true;
+
+        SFXManager.PlaySFX(SoundTypes.Button);
     }
 
     public void Help()
     {
         Debug.Log("Help");
+
+        SFXManager.PlaySFX(SoundTypes.Button);
     }
 
     public void BacktoMenu()
@@ -51,6 +57,8 @@ public class PauseMenu : MonoBehaviour
         Debug.Log("Back to Menu");
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
+
+        SFXManager.PlaySFX(SoundTypes.Button);
     }
 
 }
