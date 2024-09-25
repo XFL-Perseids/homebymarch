@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 //quest points are the start/end point of a quest
-//require a sphere collider here if player has to be close to the npc to trigger quest
+//require a sphere collider here if player has to be close to the npc to trigger
 //if it's a button, then add StartOrEndQuest to the OnPress
 public class QuestPoint : MonoBehaviour{
 

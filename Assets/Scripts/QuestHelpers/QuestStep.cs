@@ -32,7 +32,7 @@ public abstract class QuestStep : MonoBehaviour
     }
 
     protected void ChangeState(string newState){
-        GameEventsManager.instance.questEvents.QuestStepStateChange(questId, stepIndex, new QuestState(newState));
+        GameEventsManager.instance.questEvents.QuestStepStateChange(questId, stepIndex, new QuestStepState(newState));
     }
 
     protected abstract void SetQuestStepState(string state);//override on specific quests + update state

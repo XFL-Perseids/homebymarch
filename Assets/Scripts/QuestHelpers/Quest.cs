@@ -12,7 +12,7 @@ public class Quest{
         this.info = questInfo;
         this.state = QuestState.REQUIREMENTS_NOT_MET;
         this.currentQuestStepIndex = 0;
-        this.questStepStates = new QuestStepState[info.questStepPrefabs.Length];
+        this.questStepStates = new QuestStepState[info.questStepPrefabs.Count];
 
         for(int i = 0; i < questStepStates.Length; i++){
             questStepStates[i] = new QuestStepState();
@@ -26,7 +26,7 @@ public class Quest{
         this.questStepStates = questStepStates;
 
         //in case number of quests in the chain is changed
-        if(this.questStepStates.Length != this.info.questStepPrefabs.Length){
+        if(this.questStepStates.Length != this.info.questStepPrefabs.Count){
             Debug.Log("save data desynced bc of changes to the prefabs. reset data please");
         }
     }
@@ -62,7 +62,7 @@ public class Quest{
     }
 
     public void StoreQuestStepState(QuestStepState questStepState, int stepIndex){
-        if (stepIndex < questStepState.Length){
+        if (stepIndex < questStepStates.Length){
             questStepStates[stepIndex].state = questStepState.state;
         } else{
             Debug.Log("out of range");  

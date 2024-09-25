@@ -161,11 +161,10 @@ public class QuestManager : MonoBehaviour{
         
         try{
             
-            QuestData questData = quest.GetQuestData;
+            QuestData questData = quest.GetQuestData();
             string serializedData = JsonUtility.ToJson(questData);
             File.WriteAllText(questJsonFilePath, serializedData);
-        }
-        catch(System.Exception e){
+        } catch(System.Exception e){
             Debug.Log("not saved unlucky");
         }
     }
@@ -175,18 +174,17 @@ public class QuestManager : MonoBehaviour{
         string json = File.ReadAllText(questJsonFilePath);
 
         try{
-            if (questJsonFilePath.HasKey(questInfo.id) && loadQuestState){
-                QuestData questData = JsonUtility.FromJson<QuestData>(serializedData);
+            if (loadQuestState){
+                QuestData questData = JsonUtility.FromJson<QuestData>(json);
                 quest = new Quest(questInfo, questData.state, questData.questStepIndex, questData.questStepStates);
             } else {
                 quest = new Quest(questInfo);
             }
-        }
-            catch (System.Exception e){
-                Debug.Log("Quest id not found" + quest.info.id) + ": " + e ;
+        } catch (System.Exception e){
+                
             }
             
 
-        return quest
+        return quest;
     }
 }
