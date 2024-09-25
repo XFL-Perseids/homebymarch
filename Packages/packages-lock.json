@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.gitamend.unityutils": {
+      "version": "https://github.com/adammyhre/Unity-Utils.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "16df7a6fabd7bd1a4d4c6e79832c2803826e7867"
+    },
     "com.unity.burst": {
       "version": "1.8.16",
       "depth": 1,
@@ -41,7 +48,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.28",
+      "version": "3.0.31",
       "depth": 0,
       "source": "registry",
       "dependencies": {

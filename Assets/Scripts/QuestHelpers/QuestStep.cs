@@ -10,19 +10,18 @@ public abstract class QuestStep : MonoBehaviour
 {
     public string questName;
     public string description;
-    private bool isCompleted;
+    private bool isCompleted = false;
+    private string questId;
 
-    public QuestStep(string name, string desc)
-    {
-        questName = name;
-        description = desc;
-        isCompleted = false;
+    public void InitializeQuestStep(string questId){
+        this.questId = questId;
     }
 
     public void CompleteQuest()
     {
         if (!isCompleted){
         isCompleted = true;
+        GameEventsManager.instance.questEvents.AdvanceQuest(questId);
         Destroy(this.gameObject);
         }
     }
