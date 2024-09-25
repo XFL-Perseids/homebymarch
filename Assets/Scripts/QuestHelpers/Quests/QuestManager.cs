@@ -23,6 +23,7 @@ public class QuestManager : MonoBehaviour{
         GameEventsManager.instance.questEvents.onStartQuest += StartQuest;
         GameEventsManager.instance.questEvents.onAdvanceQuest += AdvanceQuest;
         GameEventsManager.instance.questEvents.onFinishQuest += FinishQuest;
+        GameEventsManager.instance.questEvents.onQuestStepStateChange += QuestStepStateChange;
 
         
         //add a listener for player level thx
@@ -32,7 +33,7 @@ public class QuestManager : MonoBehaviour{
         GameEventsManager.instance.questEvents.onStartQuest -= StartQuest;
         GameEventsManager.instance.questEvents.onAdvanceQuest -= AdvanceQuest;
         GameEventsManager.instance.questEvents.onFinishQuest -= FinishQuest;
-
+        GameEventsManager.instance.questEvents.onQuestStepStateChange -= QuestStepStateChange;
         
         //add a listener for player level thx
         
@@ -107,6 +108,14 @@ public class QuestManager : MonoBehaviour{
     private void ClaimRewards(Quest quest){
         Debug.Log("wow ! you are did it!");
     }
+
+    private void QuestStepStateChange(string id, int stepIndex, QuestStepState questStepState){
+        Quest quest = GetQuestById(id);
+        quest.StoreQuestStepState(questStepState, stepIndex);
+        ChangeQuestState(id, quest.state);
+    }
+
+
     private Dictionary<string, Quest> CreateQuestMap(){
         QuestInfoSO[] allQuests = Resources.LoadAll<QuestInfoSO>("Quests");
 
@@ -130,5 +139,24 @@ public class QuestManager : MonoBehaviour{
 
         }
         return quest;
+    }
+
+    private void OnApplicationQuit(){
+        foreach (Quest quest in questMap.Values){
+           SaveQuest(quest);
+        }
+    }
+
+    private void SaveQuest(Quest quest){
+        string questJsonFilePath = Application.persistentDataPath + "/questData.json"
+        try{
+            
+            QuestData questData = quest.GetQuestData;
+            string serializedData = JsonUtility.ToJson(questData);
+            File.WriteAllText(questJsonFilePath, serializedData);
+        }
+        catch(System.Exeception e){
+            Debug.Log("not saved unlucky");
+        }
     }
 }
