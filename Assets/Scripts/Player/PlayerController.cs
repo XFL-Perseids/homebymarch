@@ -31,7 +31,7 @@ namespace HomeByMarch {
         [SerializeField] float dashCooldown = 2f;
         
         [Header("Attack Settings")]
-        [SerializeField] float attackCooldown = 0.5f;
+        [SerializeField] float attackCooldown = 2f;
         [SerializeField] float attackDistance = 1f;
         [SerializeField] int attackDamage = 10;
 
@@ -93,9 +93,7 @@ namespace HomeByMarch {
         }
 
         bool ReturnToLocomotionState() {
-            return !attackTimer.IsRunning 
-                   && !jumpTimer.IsRunning 
-                   && !dashTimer.IsRunning;
+            return !attackTimer.IsRunning;
         }
 
         void SetupTimers() {
@@ -143,8 +141,8 @@ namespace HomeByMarch {
         }
 
         public void Attack() {
-            Vector3 attackPos = transform.position + transform.forward;
-            Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
+            // Vector3 attackPos = transform.position + transform.forward;
+            // Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
             
             // foreach (var enemy in hitEnemies) {
             //     Debug.Log(enemy.name);
@@ -210,6 +208,14 @@ namespace HomeByMarch {
 
         public void HandleMovement()
 {
+    // If the player is attacking, stop movement
+    if (attackTimer.IsRunning)
+    {
+        // Smooth to zero speed to halt movement
+        SmoothSpeed(ZeroF);
+        return;
+    }
+
     // Get the input direction
     var movementInput = new Vector3(input.Direction.x, 0f, input.Direction.y).normalized;
 

@@ -5,14 +5,13 @@ namespace HomeByMarch {
         public AttackState(PlayerController player, Animator animator) : base(player, animator) { }
 
         public override void OnEnter() {
-            animator.CrossFade(AttackHash, crossFadeDuration);
             Debug.Log("AttackState.OnEnter");
-            //
+            animator.CrossFade(AttackHash, crossFadeDuration);
             player.Attack();
         }
 
         public override void FixedUpdate() {
-            // player.HandleMovement();
+            player.HandleMovement();
         }
     }
 }
