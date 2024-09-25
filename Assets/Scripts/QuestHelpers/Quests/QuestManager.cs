@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 
 public class QuestManager : MonoBehaviour{
+
+    [Header("Config")]
+    [SerializeField] private bool loadQuestState = true;
+
+    string questJsonFilePath = Application.persistentDataPath + "/questData.json";
     private Dictionary<string, Quest> questMap;
 
     private int currentPlayerLevel = 1; // change to actual player's level
@@ -41,6 +47,10 @@ public class QuestManager : MonoBehaviour{
 
     private void Start(){
         foreach (Quest quest in questMap.Values){
+
+            if(quest.state == QuestState.IN_PROGRESS){
+                quest.InstantiateCurrentQuestStep(this.transform);
+            }
             GameEventsManager.instance.questEvents.QuestStateChange(quest);
         }
     }
@@ -125,7 +135,7 @@ public class QuestManager : MonoBehaviour{
             if(idToQuestMap.ContainsKey(questInfo.id)){
                 Debug.LogWarning("duplicate id found:" + questInfo.id);
             }
-            idToQuestMap.Add(questInfo.id, new Quest(questInfo));
+            idToQuestMap.Add(questInfo.id, LoadQuest(questInfo));
         }
 
         return idToQuestMap;
@@ -148,15 +158,35 @@ public class QuestManager : MonoBehaviour{
     }
 
     private void SaveQuest(Quest quest){
-        string questJsonFilePath = Application.persistentDataPath + "/questData.json"
+        
         try{
             
             QuestData questData = quest.GetQuestData;
             string serializedData = JsonUtility.ToJson(questData);
             File.WriteAllText(questJsonFilePath, serializedData);
         }
-        catch(System.Exeception e){
+        catch(System.Exception e){
             Debug.Log("not saved unlucky");
         }
+    }
+
+    private Quest LoadQuest(QuestInfoSO questInfo){
+        Quest quest = null;
+        string json = File.ReadAllText(questJsonFilePath);
+
+        try{
+            if (questJsonFilePath.HasKey(questInfo.id) && loadQuestState){
+                QuestData questData = JsonUtility.FromJson<QuestData>(serializedData);
+                quest = new Quest(questInfo, questData.state, questData.questStepIndex, questData.questStepStates);
+            } else {
+                quest = new Quest(questInfo);
+            }
+        }
+            catch (System.Exception e){
+                Debug.Log("Quest id not found" + quest.info.id) + ": " + e ;
+            }
+            
+
+        return quest
     }
 }
