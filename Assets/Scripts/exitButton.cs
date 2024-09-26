@@ -8,8 +8,6 @@ public class exitButton : MonoBehaviour
     {
         Application.Quit();
         Debug.Log("Existing Game");
-
-        SFXManager.PlaySFX(SoundTypes.Button);
     }
     
 }

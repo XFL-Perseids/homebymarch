@@ -7,35 +7,48 @@ using UnityEngine.Audio;
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
 public class SFXManager : MonoBehaviour
 {
-    [SerializeField] public SoundList[] soundList;
     public static SFXManager Instance;
+    [SerializeField] public SoundList[] soundList;
     public AudioSource sfxSource;
 
     private void Awake()
     {
-        Instance = this;
-    }
-
-    private void Start()
-    {
-        sfxSource = GetComponent<AudioSource>();
+        if(!Instance)
+        {
+            Instance = this;
+            sfxSource = GetComponent<AudioSource>();
+            Debug.Log("SFXManager Start called. Current SFX Volume: " + sfxSource.volume); 
+        }
+        if (Application.isPlaying)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
     }
 
     public static void PlaySFX(SoundTypes sfx)
     {
-        AudioClip[] clips = Instance.soundList[(int)sfx].Sounds;
-        AudioClip randomClip = clips[UnityEngine.Random.Range(0, clips.Length)];
-        Instance.sfxSource.PlayOneShot(randomClip);
+        if (Instance != null && Application.isPlaying)
+        {
+            AudioClip[] clips = Instance.soundList[(int)sfx].Sounds;
+            AudioClip randomClip = clips[UnityEngine.Random.Range(0, clips.Length)];
+            Instance.sfxSource.PlayOneShot(randomClip);
+        }
     }
 
 //for uicontrollers
     public void MuteSFX()
     {
-        sfxSource.mute = !sfxSource.mute;
+         if (sfxSource != null)
+        {
+            sfxSource.mute = !sfxSource.mute;
+        }
     }
     public void SFXVolume(float volume)
     {
-        sfxSource.volume = volume;
+       if (sfxSource != null)
+        {
+            sfxSource.volume = volume;
+        }
     }
 
     private void OnValidate()
@@ -50,12 +63,12 @@ public class SFXManager : MonoBehaviour
     }
 
 
-[Serializable]
+    [Serializable]
     public struct SoundList
     {
-        public AudioClip[] Sounds { get => sfx; }
-        [HideInInspector]public string name;
-        [SerializeField]public AudioClip[] sfx;
+        public AudioClip[] Sounds => sfx; 
+        [HideInInspector] public string name;
+        [SerializeField] public AudioClip[] sfx;
     }
 
 }

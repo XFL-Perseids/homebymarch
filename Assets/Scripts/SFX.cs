@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayButton : MonoBehaviour
+public class SFX : MonoBehaviour
+
 {
-    public GameObject playButtonUI;
-    public void PlayGame()
+    public AudioSource sound;
+    public void click()
     {
         SFXManager.PlaySFX(SoundTypes.Button);
     }
