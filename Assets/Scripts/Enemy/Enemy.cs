@@ -13,6 +13,8 @@ namespace HomeByMarch
         [SerializeField] private Animator animator;
 
         [SerializeField] float wanderRadius = 10f;
+
+        [SerializeField] private GameObject healthBarPrefab;
         private StateMachine stateMachine;
         void Start()
         {
@@ -34,6 +36,12 @@ namespace HomeByMarch
 
         void Update()
         {
+            if(playerDetector.CanDetectPlayer())
+            {
+               healthBarPrefab.SetActive(true);
+            }else{
+                healthBarPrefab.SetActive(false);
+            }
             stateMachine.Update();
         }
 
