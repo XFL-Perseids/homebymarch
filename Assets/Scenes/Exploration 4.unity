@@ -806,6 +806,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292223216}
   m_CullTransparentMesh: 1
+--- !u!1 &308474474 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1543907489110611421, guid: 7801dd4be3f727e44b74dd7ded574c4e,
+    type: 3}
+  m_PrefabInstance: {fileID: 7559988479751283457}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &308474479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308474474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9cbd869340b4fe49aa514e4892abca3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventChannel: {fileID: 11400000, guid: 18e133ff9499a2e4d9591cf6d9188b7d, type: 2}
+  unityEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &345189251 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7195934529245441824, guid: 15f32a9777aa6f24db5a5165707fed9d,
@@ -1633,6 +1655,11 @@ PrefabInstance:
       propertyPath: joystick
       value: 
       objectReference: {fileID: 1640369396}
+    - target: {fileID: 4358974464888549633, guid: 15f32a9777aa6f24db5a5165707fed9d,
+        type: 3}
+      propertyPath: playerHealth
+      value: 
+      objectReference: {fileID: 1280169115}
     - target: {fileID: 4453893081091945416, guid: 15f32a9777aa6f24db5a5165707fed9d,
         type: 3}
       propertyPath: healthText
@@ -2518,6 +2545,18 @@ MonoBehaviour:
   m_Offset: {x: 0.28, y: 1.48, z: -7.12}
   m_ApplyAfter: 1
   m_PreserveComposition: 0
+--- !u!114 &1280169115 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9082583747671406911, guid: 15f32a9777aa6f24db5a5165707fed9d,
+    type: 3}
+  m_PrefabInstance: {fileID: 824055033}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4605d691dc304e41a829b3dd324f333, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1308380225
 GameObject:
   m_ObjectHideFlags: 0
@@ -4141,7 +4180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  playerHealthChannel: {fileID: 11400000, guid: b83ca446ee59b604283b025ab624a6c4,
+  playerHealthChannel: {fileID: 11400000, guid: 18e133ff9499a2e4d9591cf6d9188b7d,
     type: 2}
 --- !u!1 &2078849600
 GameObject:
@@ -4257,10 +4296,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1543907489110611421, guid: 7801dd4be3f727e44b74dd7ded574c4e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4208005295201583124, guid: 7801dd4be3f727e44b74dd7ded574c4e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4971209092809514421, guid: 7801dd4be3f727e44b74dd7ded574c4e,
         type: 3}
       propertyPath: m_Name
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6184678544076959210, guid: 7801dd4be3f727e44b74dd7ded574c4e,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6184678544076959210, guid: 7801dd4be3f727e44b74dd7ded574c4e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6274512547739413320, guid: 7801dd4be3f727e44b74dd7ded574c4e,
         type: 3}
@@ -4330,6 +4389,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2033783316}
+    - targetCorrespondingSourceObject: {fileID: 1543907489110611421, guid: 7801dd4be3f727e44b74dd7ded574c4e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 308474479}
   m_SourcePrefab: {fileID: 100100000, guid: 7801dd4be3f727e44b74dd7ded574c4e, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

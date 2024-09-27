@@ -15,7 +15,6 @@ namespace HomeByMarch
         [SerializeField, Self] Animator animator;
         [SerializeField, Anywhere] InputReader input;
 
-
         [Header("Movement Settings")]
         [SerializeField] float moveSpeed = 6f;
         [SerializeField] float rotationSpeed = 15f;
@@ -68,7 +67,6 @@ namespace HomeByMarch
         {
             rb = GetComponent<Rigidbody>();
             mainCamera = Camera.main;
-
 
             SetupTimers();
             SetupStateMachine();
@@ -132,14 +130,12 @@ namespace HomeByMarch
 
         void OnEnable()
         {
-
             input.Dash += OnDash;
             input.Attack += OnAttack;
         }
 
         void OnDisable()
         {
-
             input.Attack -= OnAttack;
         }
 
@@ -153,15 +149,32 @@ namespace HomeByMarch
 
         public void Attack()
         {
-            // Vector3 attackPos = transform.position + transform.forward;
-            // Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
+            // Null check for Rigidbody and Animator
+            if (rb == null || animator == null)
+            {
+                Debug.LogError("Required components (Rigidbody or Animator) are missing!");
+                return;
+            }
 
-            // foreach (var enemy in hitEnemies) {
-            //     Debug.Log(enemy.name);
-            //     if (enemy.CompareTag("Enemy")) {
-            //         enemy.GetComponent<Health>().TakeDamage(attackDamage);
-            //     }
-            // }
+            // Get attack position
+            Vector3 attackPos = transform.position + transform.forward;
+            Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
+
+            // Handle enemy collision
+            foreach (var enemy in hitEnemies)
+            {
+                Debug.Log(enemy.name);
+                // Null check for Health component
+                var health = enemy.GetComponent<Health>();
+                if (health != null)
+                {
+                    health.TakeDamage(attackDamage);
+                }
+                else
+                {
+                    Debug.LogWarning($"{enemy.name} does not have a Health component!");
+                }
+            }
         }
 
         void OnDash(bool performed)
@@ -187,13 +200,13 @@ namespace HomeByMarch
         void FixedUpdate()
         {
 #if ENABLE_LEGACY_INPUT_MANAGER
-                inputs.x = joystick.Horizontal;
-                inputs.y = joystick.Vertical;
-  
-                stateMachine.FixedUpdate();
+            inputs.x = joystick.Horizontal;
+            inputs.y = joystick.Vertical;
+
+            stateMachine.FixedUpdate();
 #else
             InputSystemHelper.EnableBackendsWarningMessage();
-# endif
+#endif
         }
 
         void UpdateAnimator()
@@ -209,86 +222,66 @@ namespace HomeByMarch
             }
         }
 
-        // public void HandleJump() {
-        //     // If not jumping and grounded, keep jump velocity at 0
-        //     if (!jumpTimer.IsRunning && groundChecker.IsGrounded) {
-        //         jumpVelocity = ZeroF;
-        //         return;
-        //     }
-
-        //     if (!jumpTimer.IsRunning) {
-        //         // Gravity takes over
-        //         jumpVelocity += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
-        //     }
-
-        //     // Apply velocity
-        //     rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
-        // }
-
         public void HandleMovement()
+        {
+            if (useCharacterForward)
             {
-                if (useCharacterForward)
-                {
-                    speed = Mathf.Abs(inputs.x) + inputs.y;
-                }
-                else
-                {
-                    speed = Mathf.Abs(inputs.x) + Mathf.Abs(inputs.y);
-                }
-
-                speed = Mathf.Clamp(speed, 0f, 1f);
-                speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
-                animator.SetFloat("Speed", speed);
-
-                UpdateTargetDirection();
-
-                Vector3 moveDirection = new Vector3(inputs.x * moveSpeed, rb.velocity.y, inputs.y * moveSpeed);
-                rb.velocity = moveDirection;
-
-                if (inputs != Vector2.zero && targetDirection.magnitude > 0.1f)
-                {
-                    HandleRotation();
-                }
+                speed = Mathf.Abs(inputs.x) + inputs.y;
+            }
+            else
+            {
+                speed = Mathf.Abs(inputs.x) + Mathf.Abs(inputs.y);
             }
 
+            speed = Mathf.Clamp(speed, 0f, 1f);
+            speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
+            animator.SetFloat("Speed", speed);
 
-            public void UpdateTargetDirection()
+            UpdateTargetDirection();
+
+            Vector3 moveDirection = new Vector3(inputs.x * moveSpeed, rb.velocity.y, inputs.y * moveSpeed);
+            rb.velocity = moveDirection;
+
+            if (inputs != Vector2.zero && targetDirection.magnitude > 0.1f)
             {
-                if (!useCharacterForward)
-                {
-                    turnSpeedMultiplier = 1f;
-                    Vector3 forward = mainCamera.transform.TransformDirection(Vector3.forward);
-                    forward.y = 0;
-                    Vector3 right = mainCamera.transform.TransformDirection(Vector3.right);
-                    targetDirection = inputs.x * right + inputs.y * forward;
-                }
-                else
-                {
-                    turnSpeedMultiplier = 0.2f;
-                    Vector3 forward = transform.TransformDirection(Vector3.forward);
-                    forward.y = 0;
-                    Vector3 right = transform.TransformDirection(Vector3.right);
-                    targetDirection = inputs.x * right + Mathf.Abs(inputs.y) * forward;
-                }
+                HandleRotation();
             }
-            void HandleRotation()
+        }
+
+        public void UpdateTargetDirection()
+        {
+            if (!useCharacterForward)
             {
-                Vector3 lookDirection = targetDirection.normalized;
-                Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
-                float differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
-                float eulerY = transform.eulerAngles.y;
+                turnSpeedMultiplier = 1f;
+                Vector3 forward = mainCamera.transform.TransformDirection(Vector3.forward);
+                forward.y = 0;
+                Vector3 right = mainCamera.transform.TransformDirection(Vector3.right);
+                targetDirection = inputs.x * right + inputs.y * forward;
+            }
+            else
+            {
+                turnSpeedMultiplier = 0.2f;
+                Vector3 forward = transform.TransformDirection(Vector3.forward);
+                forward.y = 0;
+                Vector3 right = transform.TransformDirection(Vector3.right);
+                targetDirection = inputs.x * right + Mathf.Abs(inputs.y) * forward;
+            }
+        }
 
-                if (differenceRotation != 0)
-                {
-                    eulerY = freeRotation.eulerAngles.y;
-                }
+        void HandleRotation()
+        {
+            Vector3 lookDirection = targetDirection.normalized;
+            Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
+            float differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
+            float eulerY = transform.eulerAngles.y;
 
-                Vector3 euler = new Vector3(0, eulerY, 0);
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
+            if (differenceRotation != 0)
+            {
+                eulerY = freeRotation.eulerAngles.y;
             }
 
-
-
-
+            Vector3 euler = new Vector3(0, eulerY, 0);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
+        }
     }
 }

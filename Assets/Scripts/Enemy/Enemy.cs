@@ -17,6 +17,8 @@ namespace HomeByMarch
         [SerializeField] float attackDelay = 0.8f; // Delay before the damage is applied
 
         [SerializeField] float wanderRadius = 10f;
+
+        [SerializeField] private GameObject healthBarPrefab;
         private StateMachine stateMachine;
         public Transform Player { get; private set; }
         public Health PlayerHealth { get; private set; }
@@ -51,6 +53,12 @@ namespace HomeByMarch
 
         void Update()
         {
+            if(playerDetector.CanDetectPlayer())
+            {
+               healthBarPrefab.SetActive(true);
+            }else{
+                healthBarPrefab.SetActive(false);
+            }
             stateMachine.Update();
             attackTimer.Tick(Time.deltaTime);
         }
