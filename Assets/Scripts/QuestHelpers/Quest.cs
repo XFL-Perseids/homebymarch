@@ -10,7 +10,7 @@ public class Quest{
 
     public Quest(QuestInfoSO questInfo){
         this.info = questInfo;
-        this.state = QuestState.REQUIREMENTS_NOT_MET;
+        this.state = QuestState.CAN_START;
         this.currentQuestStepIndex = 0;
         this.questStepStates = new QuestStepState[info.questStepPrefabs.Count];
 
@@ -27,6 +27,7 @@ public class Quest{
 
         //in case number of quests in the chain is changed
         if(this.questStepStates.Length != this.info.questStepPrefabs.Count){
+            Debug.Log("nya" + questInfo.displayName);
             Debug.Log("save data desynced bc of changes to the prefabs. reset data please");
         }
     }

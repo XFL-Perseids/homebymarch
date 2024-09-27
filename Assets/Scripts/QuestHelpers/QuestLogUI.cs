@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
 public class QuestLogUI : MonoBehaviour{
     [Header("Components")]
@@ -13,20 +14,26 @@ public class QuestLogUI : MonoBehaviour{
     [SerializeField] private TMP_Text goldRewardText;
     [SerializeField] private TMP_Text experienceRewardText;
     // [SerializeField] private TMP_Text itemRewardText; // replace this with an item when you can
-    [SerializeField] private TMP_Text levelRequirementsText;
-    [SerializeField] private TMP_Text questRequirementsText;
 
+    [Header("Claim Button")]
+    private GameObject claimQuestButtonPrefab;
+    private Dictionary<string, ClaimQuestButton> idToClaimButtonMap = new Dictionary<string, ClaimQuestButton>();
     private Button defaultQuestButton;
+    private ClaimQuestButton claimQuestButton;
 
 
-    private void onEnable(){
+
+    private void OnEnable(){
         GameEventsManager.instance.questEvents.onQuestStateChange += QuestStateChange;
+        Debug.Log("enabled");
     }
-    private void onDisable(){
+    private void OnDisable(){
         GameEventsManager.instance.questEvents.onQuestStateChange -= QuestStateChange;
     }
+    
     private void QuestStateChange(Quest quest){
-        QuestLogButton questLogButton = scrollingList.CreateButton(quest, () => {
+        QuestLogButton questLogButton = scrollingList.CreateScrollListButton(quest, () => {
+            Debug.Log("h" + quest.info.displayName);
             SetQuestLogInfo(quest);
         });
 
@@ -38,16 +45,51 @@ public class QuestLogUI : MonoBehaviour{
 
     private void SetQuestLogInfo (Quest quest){
         questDisplayNameText.text = quest.info.displayName;
-        levelRequirementsText.text = "Required Level:" + quest.info.levelRequired;
-        questRequirementsText.text = "";
+        // levelRequirementsText.text = "Required Level:" + quest.info.levelRequired;
+        // questRequirementsText.text = "";
 
-        foreach(QuestInfoSO prerequesiteQuestInfo in quest.info.questPrerequesites){
-            questRequirementsText.text += prerequesiteQuestInfo.displayName + "\n";
-        }
+        // foreach(QuestInfoSO prerequesiteQuestInfo in quest.info.questPrerequesites){
+        //     questRequirementsText.text += prerequesiteQuestInfo.displayName + "\n";
+        // }
 
         goldRewardText.text = quest.info.goldReward.ToString();
         experienceRewardText.text = quest.info.experienceReward.ToString();
 
+        //image for item rewards
+
+        claimQuestButton = CreateClaimQuestButton(quest, () => {
+            //add logic to increase rewards here
+            GameObject.Destroy(contentParent);
+        });
+
+
+
+    }
+    public bool doesClaimButtonExist(Quest quest){
+        return idToClaimButtonMap.ContainsKey(quest.info.id);
+    }
+
+    private ClaimQuestButton InstantiateClaimQuestButton(Quest quest, UnityAction selectAction){
+        ClaimQuestButton claimQuestButton = Instantiate(claimQuestButtonPrefab, contentParent.transform).GetComponent<ClaimQuestButton>();
+
+        claimQuestButton.gameObject.name = "claim_" + quest.info.id;
+        claimQuestButton.Initialize(quest.info.displayName, selectAction);
+
+        idToClaimButtonMap[quest.info.id] = claimQuestButton;
+
+        return claimQuestButton;
+
+    }
+
+    public ClaimQuestButton CreateClaimQuestButton(Quest quest, UnityAction selectAction){
+
+        ClaimQuestButton claimQuestButton = null;
+
+        if(quest.state == QuestState.CAN_FINISH){
+            claimQuestButton = InstantiateClaimQuestButton(quest, selectAction);
+        }
+
+        return claimQuestButton;
 
     }
 

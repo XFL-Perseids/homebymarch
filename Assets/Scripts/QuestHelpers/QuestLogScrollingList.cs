@@ -16,6 +16,7 @@ public class QuestLogScrollingList: MonoBehaviour{
 
     private Dictionary<string, QuestLogButton> idToButtonMap = new Dictionary<string, QuestLogButton>();
 
+
     public bool doesButtonExist(Quest quest){
         return idToButtonMap.ContainsKey(quest.info.id);
     }
@@ -24,13 +25,15 @@ public class QuestLogScrollingList: MonoBehaviour{
         return !(quest.state == QuestState.REQUIREMENTS_NOT_MET | quest.state == QuestState.FINISHED);
     }
 
-    public QuestLogButton CreateButton(Quest quest, UnityAction selectAction){
+    public QuestLogButton CreateScrollListButton(Quest quest, UnityAction selectAction){
 
         QuestLogButton questLogButton = null;
         if (!doesButtonExist(quest) && isQuestViewable(quest)){
+            Debug.Log("ok button should be instantiated here" + quest.info.id);
             questLogButton = InstantiateQuestLogButton(quest, selectAction);
         } else {
             if(isQuestViewable(quest)){
+            Debug.Log("" + quest.info.id);
             questLogButton = idToButtonMap[quest.info.id];
             //should only show quests you can view (met requirements, in progress, and claimable)
             }

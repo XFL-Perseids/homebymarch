@@ -8,8 +8,7 @@ using UnityEngine;
 [System.Serializable]
 public abstract class QuestStep : MonoBehaviour
 {
-    public string questName;
-    public string description;
+
     private bool isCompleted = false;
     private string questId;
     private int stepIndex;

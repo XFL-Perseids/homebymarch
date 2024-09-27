@@ -21,8 +21,9 @@ public class QuestManager : MonoBehaviour{
         questJsonFilePath = Application.persistentDataPath + "/questData.json";
         questMap = CreateQuestMap();
 
-        Quest quest = GetQuestById("AchieveTotalStepCount");
 
+
+        
 
     }
 
@@ -54,6 +55,8 @@ public class QuestManager : MonoBehaviour{
             }
             GameEventsManager.instance.questEvents.QuestStateChange(quest);
         }
+
+
     }
 
 
@@ -133,10 +136,12 @@ public class QuestManager : MonoBehaviour{
         Dictionary<string, Quest> idToQuestMap = new Dictionary<string, Quest>();
 
         foreach (QuestInfoSO questInfo in allQuests){
+            
             if(idToQuestMap.ContainsKey(questInfo.id)){
                 Debug.LogWarning("duplicate id found:" + questInfo.id);
             }
             idToQuestMap.Add(questInfo.id, LoadQuest(questInfo));
+            Debug.Log(LoadQuest(questInfo).state);
         }
 
         return idToQuestMap;
