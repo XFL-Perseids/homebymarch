@@ -1217,7 +1217,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 459822110}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dcbdd8ca2b46a74db87d9135ef3b9cc, type: 3}
+  m_Script: {fileID: 11500000, guid: a9ab0b4a8a757ae4aaf7ba1ee2a685fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   musicSounds:
@@ -3035,7 +3035,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66f48023dc5c69a47982203dda56d71e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonsfx: {fileID: 0}
   sound: {fileID: 0}
 --- !u!1 &1166432795
 GameObject:
