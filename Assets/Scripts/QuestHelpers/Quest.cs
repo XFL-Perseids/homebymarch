@@ -64,6 +64,7 @@ public class Quest{
     public void StoreQuestStepState(QuestStepState questStepState, int stepIndex){
         if (stepIndex < questStepStates.Length){
             questStepStates[stepIndex].state = questStepState.state;
+            questStepStates[stepIndex].status = questStepState.status;
         } else{
             Debug.Log("out of range");  
         }
@@ -71,5 +72,15 @@ public class Quest{
 
     public QuestData GetQuestData(){
         return new QuestData(state, currentQuestStepIndex, questStepStates);
+    }
+
+    public string GetFullStatusText(){
+
+        string fullStatus = "";
+        for (int i = 0; i < currentQuestStepIndex; i++){
+            fullStatus += questStepStates[currentQuestStepIndex].status;
+        }
+
+        return fullStatus;
     }
 }
