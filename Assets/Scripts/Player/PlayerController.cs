@@ -4,74 +4,78 @@ using KBCore.Refs;
 using UnityEngine;
 using Utilities;
 
-namespace HomeByMarch {
-    public class PlayerController : ValidatedMonoBehaviour {
+namespace HomeByMarch
+{
+    public class PlayerController : ValidatedMonoBehaviour
+    {
         [Header("References")]
-        // [SerializeField, Self] Rigidbody rb;
+        Rigidbody rb;
+        [SerializeField] FixedJoystick joystick;
         // [SerializeField, Self] GroundChecker groundChecker;
         [SerializeField, Self] Animator animator;
-        [SerializeField] CharacterController controller;
-        [SerializeField, Anywhere] CinemachineVirtualCamera freeLookVCam;
         [SerializeField, Anywhere] InputReader input;
-        
+
+
         [Header("Movement Settings")]
         [SerializeField] float moveSpeed = 6f;
         [SerializeField] float rotationSpeed = 15f;
         [SerializeField] float smoothTime = 0.2f;
-        
+        [SerializeField] bool useCharacterForward = false;
+
+        [SerializeField] float turnSpeed = 10f;
+
         [Header("Jump Settings")]
         [SerializeField] float jumpForce = 10f;
         [SerializeField] float jumpDuration = 0.5f;
         [SerializeField] float jumpCooldown = 0f;
         [SerializeField] float gravityMultiplier = 3f;
-        
+
         [Header("Dash Settings")]
         [SerializeField] float dashForce = 10f;
         [SerializeField] float dashDuration = 1f;
         [SerializeField] float dashCooldown = 2f;
-        
+
         [Header("Attack Settings")]
         [SerializeField] float attackCooldown = 2f;
         [SerializeField] float attackDistance = 1f;
         [SerializeField] int attackDamage = 10;
 
         const float ZeroF = 0f;
-        
+
         Transform mainCam;
-        
+        Vector2 inputs;
         float currentSpeed;
         float velocity;
+        float turnSpeedMultiplier;
         float jumpVelocity;
         float dashVelocity = 1f;
-
-        Vector3 movement;
-
+        float speed;
+        Camera mainCamera;
+        Vector3 targetDirection;
         List<Timer> timers;
         CountdownTimer jumpTimer;
         CountdownTimer jumpCooldownTimer;
         CountdownTimer dashTimer;
         CountdownTimer dashCooldownTimer;
         CountdownTimer attackTimer;
-        
+
         StateMachine stateMachine;
-        
+
         // Animator parameters
         static readonly int Speed = Animator.StringToHash("Speed");
 
-        void Awake() {
-            mainCam = Camera.main.transform;
-            freeLookVCam.Follow = transform;
-            freeLookVCam.LookAt = transform;
-            // Invoke event when observed transform is teleported, adjusting freeLookVCam's position accordingly
-            freeLookVCam.OnTargetObjectWarped(transform, transform.position - freeLookVCam.transform.position - Vector3.forward);
-            
-            // rb.freezeRotation = true;
-            
+        void Awake()
+        {
+            rb = GetComponent<Rigidbody>();
+            mainCamera = Camera.main;
+
+
             SetupTimers();
             SetupStateMachine();
         }
 
-        void SetupStateMachine() {
+        void SetupStateMachine()
+        {
             // State Machine
             stateMachine = new StateMachine();
 
@@ -92,11 +96,13 @@ namespace HomeByMarch {
             stateMachine.SetState(locomotionState);
         }
 
-        bool ReturnToLocomotionState() {
+        bool ReturnToLocomotionState()
+        {
             return !attackTimer.IsRunning;
         }
 
-        void SetupTimers() {
+        void SetupTimers()
+        {
             // Setup timers
             jumpTimer = new CountdownTimer(jumpDuration);
             jumpCooldownTimer = new CountdownTimer(jumpCooldown);
@@ -108,14 +114,15 @@ namespace HomeByMarch {
             dashCooldownTimer = new CountdownTimer(dashCooldown);
 
             dashTimer.OnTimerStart += () => dashVelocity = dashForce;
-            dashTimer.OnTimerStop += () => {
+            dashTimer.OnTimerStop += () =>
+            {
                 dashVelocity = 1f;
                 dashCooldownTimer.Start();
             };
 
             attackTimer = new CountdownTimer(attackCooldown);
 
-            timers = new(5) {jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, attackTimer};
+            timers = new(5) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, attackTimer };
         }
 
         void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
@@ -123,27 +130,32 @@ namespace HomeByMarch {
 
         void Start() => input.EnablePlayerActions();
 
-        void OnEnable() {
-            
+        void OnEnable()
+        {
+
             input.Dash += OnDash;
             input.Attack += OnAttack;
         }
-        
-        void OnDisable() {
+
+        void OnDisable()
+        {
 
             input.Attack -= OnAttack;
         }
-        
-        void OnAttack() {
-            if (!attackTimer.IsRunning) {
+
+        void OnAttack()
+        {
+            if (!attackTimer.IsRunning)
+            {
                 attackTimer.Start();
             }
         }
 
-        public void Attack() {
+        public void Attack()
+        {
             // Vector3 attackPos = transform.position + transform.forward;
             // Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
-            
+
             // foreach (var enemy in hitEnemies) {
             //     Debug.Log(enemy.name);
             //     if (enemy.CompareTag("Enemy")) {
@@ -152,40 +164,47 @@ namespace HomeByMarch {
             // }
         }
 
-        // void OnJump(bool performed) {
-        //     if (performed && !jumpTimer.IsRunning && !jumpCooldownTimer.IsRunning && groundChecker.IsGrounded) {
-        //         jumpTimer.Start();
-        //     } else if (!performed && jumpTimer.IsRunning) {
-        //         jumpTimer.Stop();
-        //     }
-        // }
-        
-        void OnDash(bool performed) {
-            if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning) {
+        void OnDash(bool performed)
+        {
+            if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning)
+            {
                 dashTimer.Start();
-            } else if (!performed && dashTimer.IsRunning) {
+            }
+            else if (!performed && dashTimer.IsRunning)
+            {
                 dashTimer.Stop();
             }
         }
 
-        void Update() {
-            movement = new Vector3(input.Direction.x, 0f, input.Direction.y);
+        void Update()
+        {
             stateMachine.Update();
 
             HandleTimers();
-            UpdateAnimator();
+            // UpdateAnimator();
         }
 
-        void FixedUpdate() {
-            stateMachine.FixedUpdate();
+        void FixedUpdate()
+        {
+#if ENABLE_LEGACY_INPUT_MANAGER
+                inputs.x = joystick.Horizontal;
+                inputs.y = joystick.Vertical;
+  
+                stateMachine.FixedUpdate();
+#else
+            InputSystemHelper.EnableBackendsWarningMessage();
+# endif
         }
 
-        void UpdateAnimator() {
+        void UpdateAnimator()
+        {
             animator.SetFloat(Speed, currentSpeed);
         }
 
-        void HandleTimers() {
-            foreach (var timer in timers) {
+        void HandleTimers()
+        {
+            foreach (var timer in timers)
+            {
                 timer.Tick(Time.deltaTime);
             }
         }
@@ -196,83 +215,80 @@ namespace HomeByMarch {
         //         jumpVelocity = ZeroF;
         //         return;
         //     }
-            
+
         //     if (!jumpTimer.IsRunning) {
         //         // Gravity takes over
         //         jumpVelocity += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
         //     }
-            
+
         //     // Apply velocity
         //     rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
         // }
 
         public void HandleMovement()
-{
-    // If the player is attacking, stop movement
-    if (attackTimer.IsRunning)
-    {
-        // Smooth to zero speed to halt movement
-        SmoothSpeed(ZeroF);
-        return;
-    }
+            {
+                if (useCharacterForward)
+                {
+                    speed = Mathf.Abs(inputs.x) + inputs.y;
+                }
+                else
+                {
+                    speed = Mathf.Abs(inputs.x) + Mathf.Abs(inputs.y);
+                }
 
-    // Get the input direction
-    var movementInput = new Vector3(input.Direction.x, 0f, input.Direction.y).normalized;
+                speed = Mathf.Clamp(speed, 0f, 1f);
+                speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
+                animator.SetFloat("Speed", speed);
 
-    // If there is any movement input
-    if (movementInput.magnitude > ZeroF)
-    {
-        // Adjust movement direction relative to camera
-        Vector3 cameraForward = mainCam.forward;
-        Vector3 cameraRight = mainCam.right;
+                UpdateTargetDirection();
 
-        // Flatten the camera's forward and right vectors to ignore vertical direction
-        cameraForward.y = 0f;
-        cameraRight.y = 0f;
+                Vector3 moveDirection = new Vector3(inputs.x * moveSpeed, rb.velocity.y, inputs.y * moveSpeed);
+                rb.velocity = moveDirection;
 
-        // Normalize the camera vectors
-        cameraForward.Normalize();
-        cameraRight.Normalize();
-
-        // Calculate movement direction relative to the camera
-        Vector3 movementDirection = (cameraForward * movementInput.z + cameraRight * movementInput.x).normalized;
-
-        // Handle rotation based on movement direction
-        HandleRotation(movementDirection);
-
-        // Handle movement based on the calculated movement direction
-        HandleCharacterController(movementDirection);
-
-        // Smooth the speed based on input magnitude
-        SmoothSpeed(movementInput.magnitude);
-    }
-    else
-    {
-        // If no input, smooth to zero speed
-        SmoothSpeed(ZeroF);
-    }
-}
+                if (inputs != Vector2.zero && targetDirection.magnitude > 0.1f)
+                {
+                    HandleRotation();
+                }
+            }
 
 
-        void HandleCharacterController(Vector3 adjustedDirection)
-        {
-            // Move the player
-            var adjustedMovement = adjustedDirection * (moveSpeed * Time.deltaTime);
-            controller.Move(adjustedMovement);
-        }
+            public void UpdateTargetDirection()
+            {
+                if (!useCharacterForward)
+                {
+                    turnSpeedMultiplier = 1f;
+                    Vector3 forward = mainCamera.transform.TransformDirection(Vector3.forward);
+                    forward.y = 0;
+                    Vector3 right = mainCamera.transform.TransformDirection(Vector3.right);
+                    targetDirection = inputs.x * right + inputs.y * forward;
+                }
+                else
+                {
+                    turnSpeedMultiplier = 0.2f;
+                    Vector3 forward = transform.TransformDirection(Vector3.forward);
+                    forward.y = 0;
+                    Vector3 right = transform.TransformDirection(Vector3.right);
+                    targetDirection = inputs.x * right + Mathf.Abs(inputs.y) * forward;
+                }
+            }
+            void HandleRotation()
+            {
+                Vector3 lookDirection = targetDirection.normalized;
+                Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
+                float differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
+                float eulerY = transform.eulerAngles.y;
 
-        void HandleRotation(Vector3 adjustedDirection)
-        {
-            // Adjust rotation to match movement direction
-            var targetRotation = Quaternion.LookRotation(adjustedDirection);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            transform.LookAt(transform.position + adjustedDirection);
-        }
+                if (differenceRotation != 0)
+                {
+                    eulerY = freeRotation.eulerAngles.y;
+                }
+
+                Vector3 euler = new Vector3(0, eulerY, 0);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
+            }
 
 
-        void SmoothSpeed(float value)
-        {
-            currentSpeed = Mathf.SmoothDamp(currentSpeed, value, ref velocity, smoothTime);
-        }
+
+
     }
 }
