@@ -154,6 +154,10 @@
     //             {
     //                 eulerY = freeRotation.eulerAngles.y;
     //             }
+    //             if (differenceRotation != 0)
+    //             {
+    //                 eulerY = freeRotation.eulerAngles.y;
+    //             }
 
     //             Vector3 euler = new Vector3(0, eulerY, 0);
     //             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
