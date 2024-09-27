@@ -8,7 +8,6 @@ public class SettingsMenu : MonoBehaviour
 
     public static bool settingsPanel = false;
     
-    // Update is called once per frame
     void Update()
     {
          if (Input.GetKeyDown(KeyCode.Escape))
