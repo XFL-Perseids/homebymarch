@@ -14,5 +14,5 @@ namespace HomeByMarch {
         }
     }
     
-    namespace Platformer { }
+    namespace HomeByMarch { }
 }

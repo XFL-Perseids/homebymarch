@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using static PlayerInputActions;
 
 namespace HomeByMarch {
-    [CreateAssetMenu(fileName = "InputReader", menuName = "Platformer/InputReader")]
+    [CreateAssetMenu(fileName = "InputReader", menuName = "HomeByMarch/InputReader")]
     public class InputReader : ScriptableObject, IPlayerActions {
         public event UnityAction<Vector2> Move = delegate { };
         public event UnityAction<Vector2, bool> Look = delegate { };

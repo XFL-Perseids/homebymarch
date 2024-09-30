@@ -12,7 +12,7 @@ Library: C:\Users\DAV\Desktop\capstone\homebymarch\Temp\BurstOutput\tempburstlib
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\DAV\Desktop\capstone\homebymarch\Temp\Burst
 --debug=Full
---key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.36f1/Editor/Data/PlaybackEngines/AndroidPlayer
+--key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.47f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=C:\Users\DAV\Desktop\capstone\homebymarch\Library\Burst
 --output=C:\Users\DAV\Desktop\capstone\homebymarch\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
@@ -30,7 +30,7 @@ Library: C:\Users\DAV\Desktop\capstone\homebymarch\Temp\BurstOutput\tempburstlib
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\DAV\Desktop\capstone\homebymarch\Temp\Burst
 --debug=Full
---key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.36f1/Editor/Data/PlaybackEngines/AndroidPlayer
+--key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.47f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=C:\Users\DAV\Desktop\capstone\homebymarch\Library\Burst
 --output=C:\Users\DAV\Desktop\capstone\homebymarch\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/

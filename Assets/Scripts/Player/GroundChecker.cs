@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Platformer {
+namespace HomeByMarch {
     public class GroundChecker : MonoBehaviour {
         [SerializeField] float groundDistance = 0.02f;
         [SerializeField] LayerMask groundLayers;
