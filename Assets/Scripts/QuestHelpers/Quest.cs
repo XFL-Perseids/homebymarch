@@ -10,7 +10,7 @@ public class Quest{
 
     public Quest(QuestInfoSO questInfo){
         this.info = questInfo;
-        this.state = QuestState.CAN_FINISH;
+        this.state = QuestState.REQUIREMENTS_NOT_MET;
         this.currentQuestStepIndex = 0;
         this.questStepStates = new QuestStepState[info.questStepPrefabs.Count];
 
