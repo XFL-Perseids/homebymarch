@@ -5,6 +5,16 @@ using TMPro;
 
 public abstract class MissionFactory : MonoBehaviour
 {
-    public bool isCleared;
+    public int missionId {get; private set;}
+    public bool isFinished;
+
+    protected void FinishQuest(){
+
+        if (!isFinished){
+            isFinished = true;
+
+            Destroy(this.gameObject);
+        }
+    }
     
 }
