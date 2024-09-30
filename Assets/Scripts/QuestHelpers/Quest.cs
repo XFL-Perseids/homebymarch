@@ -27,6 +27,7 @@ public class Quest{
 
         //in case number of quests in the chain is changed
         if(this.questStepStates.Length != this.info.questStepPrefabs.Count){
+            Debug.Log("nya" + questInfo.displayName);
             Debug.Log("save data desynced bc of changes to the prefabs. reset data please");
         }
     }
@@ -64,6 +65,7 @@ public class Quest{
     public void StoreQuestStepState(QuestStepState questStepState, int stepIndex){
         if (stepIndex < questStepStates.Length){
             questStepStates[stepIndex].state = questStepState.state;
+            questStepStates[stepIndex].status = questStepState.status;
         } else{
             Debug.Log("out of range");  
         }
@@ -71,5 +73,15 @@ public class Quest{
 
     public QuestData GetQuestData(){
         return new QuestData(state, currentQuestStepIndex, questStepStates);
+    }
+
+    public string GetFullStatusText(){
+
+        string fullStatus = "";
+        for (int i = 0; i < currentQuestStepIndex; i++){
+            fullStatus += questStepStates[currentQuestStepIndex].status;
+        }
+
+        return fullStatus;
     }
 }

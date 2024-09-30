@@ -8,8 +8,7 @@ using UnityEngine;
 [System.Serializable]
 public abstract class QuestStep : MonoBehaviour
 {
-    public string questName;
-    public string description;
+
     private bool isCompleted = false;
     private string questId;
     private int stepIndex;
@@ -31,8 +30,8 @@ public abstract class QuestStep : MonoBehaviour
         }
     }
 
-    protected void ChangeState(string newState){
-        GameEventsManager.instance.questEvents.QuestStepStateChange(questId, stepIndex, new QuestStepState(newState));
+    protected void ChangeState(string newState, string newStatus){
+        GameEventsManager.instance.questEvents.QuestStepStateChange(questId, stepIndex, new QuestStepState(newState, newStatus));
     }
 
     protected abstract void SetQuestStepState(string state);//override on specific quests + update state

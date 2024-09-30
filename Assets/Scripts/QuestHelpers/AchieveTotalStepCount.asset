@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: AchieveTotalStepCount
   m_EditorClassIdentifier: Assembly-CSharp::QuestInfoSO
+  <id>k__BackingField: AchieveTotalStepCount
   displayName: 
   levelRequired: 0
-  totalStepsRequired: 0
+  totalStepsRequired: 300
   questPrerequesites: []
   questStepPrefabs: []
   goldReward: 0

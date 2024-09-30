@@ -1,11 +1,20 @@
 {
   "dependencies": {
-    "com.gitamend.unityutils": {
-      "version": "https://github.com/adammyhre/Unity-Utils.git",
+    "com.kylewbanks.scenerefattribute": {
+      "version": "https://github.com/KyleBanks/scene-ref-attribute.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "16df7a6fabd7bd1a4d4c6e79832c2803826e7867"
+      "hash": "b871efe4ded8ec9ff9de31c4c272fe5860e6549c"
+    },
+    "com.unity.ai.navigation": {
+      "version": "1.1.5",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.ai": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
       "version": "1.8.16",
@@ -48,7 +57,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.31",
+      "version": "3.0.28",
       "depth": 0,
       "source": "registry",
       "dependencies": {

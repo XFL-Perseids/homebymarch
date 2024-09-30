@@ -8,8 +8,8 @@ public class QuestManager : MonoBehaviour{
 
     [Header("Config")]
     [SerializeField] private bool loadQuestState = true;
-
-    string questJsonFilePath = Application.persistentDataPath + "/questData.json";
+    string questJsonFilePath;
+    
     private Dictionary<string, Quest> questMap;
 
     private int currentPlayerLevel = 1; // change to actual player's level
@@ -18,10 +18,12 @@ public class QuestManager : MonoBehaviour{
     
 
     void Awake(){
+        questJsonFilePath = Application.persistentDataPath + "/questData.json";
         questMap = CreateQuestMap();
 
-        Quest quest = GetQuestById("AchieveTotalStepCount");
 
+
+        
 
     }
 
@@ -53,6 +55,8 @@ public class QuestManager : MonoBehaviour{
             }
             GameEventsManager.instance.questEvents.QuestStateChange(quest);
         }
+
+
     }
 
 
@@ -132,10 +136,12 @@ public class QuestManager : MonoBehaviour{
         Dictionary<string, Quest> idToQuestMap = new Dictionary<string, Quest>();
 
         foreach (QuestInfoSO questInfo in allQuests){
+            
             if(idToQuestMap.ContainsKey(questInfo.id)){
                 Debug.LogWarning("duplicate id found:" + questInfo.id);
             }
             idToQuestMap.Add(questInfo.id, LoadQuest(questInfo));
+            Debug.Log(LoadQuest(questInfo).state);
         }
 
         return idToQuestMap;
@@ -171,10 +177,11 @@ public class QuestManager : MonoBehaviour{
 
     private Quest LoadQuest(QuestInfoSO questInfo){
         Quest quest = null;
-        string json = File.ReadAllText(questJsonFilePath);
+        
 
         try{
-            if (loadQuestState){
+            if (File.Exists(questJsonFilePath) && loadQuestState){
+                string json = File.ReadAllText(questJsonFilePath);
                 QuestData questData = JsonUtility.FromJson<QuestData>(json);
                 quest = new Quest(questInfo, questData.state, questData.questStepIndex, questData.questStepStates);
             } else {
