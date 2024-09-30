@@ -31,7 +31,8 @@ public class QuestLogScrollingList: MonoBehaviour{
         QuestLogButton questLogButton = null;
         if (!doesButtonExist(quest) && isQuestViewable(quest)){
             questLogButton = InstantiateQuestLogButton(quest, pointerClickAction);
-        } else {
+        } 
+        else {
             if(isQuestViewable(quest)){
             questLogButton = idToButtonMap[quest.info.id];
             //should only show quests you can view (met requirements, in progress, and claimable)

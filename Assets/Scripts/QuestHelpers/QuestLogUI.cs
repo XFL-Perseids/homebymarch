@@ -17,7 +17,7 @@ public class QuestLogUI : MonoBehaviour{
     // [SerializeField] private TMP_Text itemRewardText; // replace this with an item when you can
 
     [Header("Claim Button")]
-    private GameObject claimQuestButtonPrefab;
+    [SerializeField] private GameObject claimQuestButtonPrefab;
     private Dictionary<string, ClaimQuestButton> idToClaimButtonMap = new Dictionary<string, ClaimQuestButton>();
     private Button defaultQuestButton;
     private ClaimQuestButton claimQuestButton;
@@ -37,8 +37,16 @@ public class QuestLogUI : MonoBehaviour{
     private void QuestStateChange(Quest quest){
         QuestLogButton questLogButton = scrollingList.CreateScrollListButton(quest, () => {
             Debug.Log("h" + quest.info.displayName);
+            Debug.Log("i" + quest.state);
             SetQuestLogInfo(quest);
+
+
+            
         });
+
+        if (quest.state == QuestState.FINISHED){
+            Destroy(questLogButton);
+        }
 
         if (defaultQuestButton == null){
             defaultQuestButton = questLogButton.button;
@@ -46,6 +54,7 @@ public class QuestLogUI : MonoBehaviour{
     }
 
     public void SetQuestLogInfo (Quest quest){
+
         questDisplayNameText.text = quest.info.displayName;
         // levelRequirementsText.text = "Required Level:" + quest.info.levelRequired;
         // questRequirementsText.text = "";
@@ -59,11 +68,10 @@ public class QuestLogUI : MonoBehaviour{
 
         //image for item rewards
 
-        // claimQuestButton = CreateClaimQuestButton(quest, () => {
-        //     //add logic to increase rewards here
-        //     GameObject.Destroy(contentParent);
-        // });
-
+        claimQuestButton = CreateClaimQuestButton(quest, () => {
+            Debug.Log("claim ?");
+            GameEventsManager.instance.questEvents.FinishQuest(quest.info.id);
+        });
 
 
     }
@@ -72,10 +80,15 @@ public class QuestLogUI : MonoBehaviour{
     }
 
     private ClaimQuestButton InstantiateClaimQuestButton(Quest quest, UnityAction pointerClickAction){
-        ClaimQuestButton claimQuestButton = Instantiate(claimQuestButtonPrefab, contentParent.transform).GetComponent<ClaimQuestButton>();
 
-        claimQuestButton.gameObject.name = "claim_" + quest.info.id;
+
+        Debug.Log("quest info id is null" + (quest.info.id == null));  
+        Debug.Log(quest.info.id);
+        ClaimQuestButton claimQuestButton = Instantiate(claimQuestButtonPrefab, contentParent.transform).GetComponent<ClaimQuestButton>();
+        claimQuestButton.gameObject.name = (quest.info.id + "_claim_button");
         claimQuestButton.Initialize(quest.info.displayName, pointerClickAction);
+        
+
 
         idToClaimButtonMap[quest.info.id] = claimQuestButton;
 
@@ -87,9 +100,10 @@ public class QuestLogUI : MonoBehaviour{
 
         ClaimQuestButton claimQuestButton = null;
 
-        if(quest.state == QuestState.CAN_FINISH){
-            claimQuestButton = InstantiateClaimQuestButton(quest, pointerClickAction);
-        }
+
+
+        claimQuestButton = InstantiateClaimQuestButton(quest, pointerClickAction);
+
 
         return claimQuestButton;
 

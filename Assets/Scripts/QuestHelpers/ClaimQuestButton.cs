@@ -17,7 +17,7 @@ public class ClaimQuestButton : MonoBehaviour, IPointerClickHandler{
         this.button = this.GetComponent<Button>();
         this.onPointerClickAction = pointerClickAction;
         this.buttonText = this.GetComponentInChildren<TMP_Text>();
-        this.buttonText.text = displayName;
+        this.buttonText.text = "Claim !!";
         
     }
 
