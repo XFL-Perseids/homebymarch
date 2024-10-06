@@ -11,3 +11,10 @@ using UnityEngine.InputSystem;
 public class StepData{
   public int numberOfSteps;
 }
+
+public class PlayerPositionData{
+  public float playerXPosition;
+  public float playerYPosition;
+  public float playerZPosition;
+  
+}
