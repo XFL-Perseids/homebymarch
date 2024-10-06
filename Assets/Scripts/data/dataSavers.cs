@@ -10,6 +10,8 @@ using UnityEngine.InputSystem;
 [System.Serializable]
 public class StepData{
   public int numberOfSteps;
+  public int dailySteps; 
+  public int overallSteps;
 }
 
 public class PlayerPositionData{

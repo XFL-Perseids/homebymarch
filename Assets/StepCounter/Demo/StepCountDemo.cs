@@ -2,127 +2,136 @@ using Repforge.StepCounterPro;
 using System;
 using TMPro;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using Unity.VisualScripting;
+using UnityEngine.Android;
+using UnityEngine.InputSystem;
 
 namespace HomeByMarch {
-public class StepCountDemo : MonoBehaviour
-{
-    public TMP_Text text;
-    public Canvas permissionCanvas;
-    [SerializeField] FloatEventChannel stepCountChannel; // Added FloatEventChannel
-
-    void OnEnable()
+    [Serializable]
+    public class StepData // Ensure this class is Serializable
     {
-        StepsToday();
+        public int numberOfSteps; // Steps for today
+        public int dailySteps; // Daily steps count
+        public int overallSteps; // Overall steps count
+        public string lastSavedDate; // Store the last saved date to check if a new day has started
     }
 
-    void Start()
+    public class StepCountDemo : MonoBehaviour
     {
-        StepCounterRequest permissionRequest = new StepCounterRequest();
-        permissionRequest
-            .OnPermissionGranted(OnPermissionGranted)
-            .OnPermissionDenied(OnPermissionDenied)
-            .RequestPermission();
-    }
+        public TMP_Text text, debugText;
+        public Canvas permissionCanvas;
+        int dailyStepCount;
+        int overallStepCount; // Track overall steps
+        [SerializeField] FloatEventChannel stepCountChannel; // Added FloatEventChannel
+        string stepJsonFilePath;
 
-    private void OnPermissionGranted()
-    {
-        StepCounterRequest stepRequest = new StepCounterRequest();
-        stepRequest
-            .Since(DateTime.Today)
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .Execute();
-    }
+        void OnEnable()
+        {
+            StepsToday();
+            Debug.Log("steps today: " + dailyStepCount);
+        }
 
-    private void OnPermissionDenied()
-    {
-        permissionCanvas.gameObject.SetActive(true);
-    }
+        void Start()
+        {
+            InitializeStepCounter();
+            LoadStepData(); // Load existing step data
+            RequestPermission();
+            StepCounterRequest permissionRequest = new StepCounterRequest();
+            permissionRequest
+                .OnPermissionGranted(OnPermissionGranted)
+                .OnPermissionDenied(OnPermissionDenied)
+                .RequestPermission();
+        }
 
-    public void OpenAppSettings()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request.OpenAppSettings();
-    }
+        private void OnPermissionGranted()
+        {
+            StepsToday(); // Call this to get today's steps immediately after permission is granted.
+        }
 
-    public void StepsBetween5and10MinutesAgo()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request
-            .Between(DateTime.Now.AddMinutes(-10), DateTime.Now.AddMinutes(-5))
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
-            .Execute();
-    }
+        void InitializeStepCounter()
+        {
+            stepJsonFilePath = Application.persistentDataPath + "/stepData.json";
+            debugText.text = stepJsonFilePath;
+        }
 
-    public void StepsBetween9and11amToday()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request
-            .Between(DateTime.Today.AddHours(9), DateTime.Today.AddHours(11))
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
-            .Execute();
-    }
+        private void LoadStepData()
+        {
+            if (File.Exists(stepJsonFilePath))
+            {
+                string jsonString = File.ReadAllText(stepJsonFilePath);
+                StepData data = JsonUtility.FromJson<StepData>(jsonString);
+                
+                // Check if the saved date is today
+                if (data.lastSavedDate != DateTime.Today.ToString("yyyy-MM-dd"))
+                {
+                    // It's a new day; reset daily step count
+                    dailyStepCount = 0; // Reset daily step count for the new day
+                }
+                else
+                {
+                    // Load today's and overall steps if it's the same day
+                    dailyStepCount = data.dailySteps;
+                }
 
-    public void StepsPast5Minutes()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request
-            .Since(DateTime.Now.AddMinutes(-5))
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
-            .Execute();
-    }
+                overallStepCount = data.overallSteps; // Load overall step count
+            }
+            else
+            {
+                overallStepCount = 0; // Initialize if no file exists
+                dailyStepCount = 0; // Initialize daily step count
+            }
+        }
 
-    public void StepsPastHour()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request
-            .Since(DateTime.Now.AddHours(-1))
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
-            .Execute();
-    }
+        private void SaveStepData()
+        {
+            StepData data = new StepData
+            {
+                numberOfSteps = dailyStepCount,
+                dailySteps = dailyStepCount,
+                overallSteps = overallStepCount, // Include overall step count
+                lastSavedDate = DateTime.Today.ToString("yyyy-MM-dd") // Store today's date
+            };
 
-    public void StepsToday()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request
-            .Since(DateTime.Today)
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
-            .Execute();
-    }
+            string stepCountString = JsonUtility.ToJson(data);
+            File.WriteAllText(stepJsonFilePath, stepCountString);
+            Debug.Log("Step data saved: " + stepCountString); // Debug log to verify saving
+        }
 
-    public void StepsYesterday()
-    {
-        StepCounterRequest request = new StepCounterRequest();
-        request
-            .Between(DateTime.Today.AddDays(-1), DateTime.Today)
-            .OnQuerySuccess((value) => {
-                text.text = value.ToString();
-                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
-            })
-            .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
-            .Execute();
+        private void OnPermissionDenied()
+        {
+            permissionCanvas.gameObject.SetActive(true);
+        }
+
+        public void StepsToday()
+        {
+            StepCounterRequest request = new StepCounterRequest();
+            request
+                .Since(DateTime.Today)
+                .OnQuerySuccess((value) => {
+                    // Update dailyStepCount based on the steps recorded today
+                    dailyStepCount = value; // Fetch today's steps
+                    overallStepCount += dailyStepCount; // Update overall step count
+                    text.text = value.ToString();
+                    stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+                    SaveStepData(); // Save data after fetching
+                })
+                .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
+                .Execute();
+        }
+
+        // Other methods remain unchanged...
+
+        async void RequestPermission()
+        {
+#if UNITY_EDITOR
+           
+#endif
+#if UNITY_ANDROID
+            AndroidRuntimePermissions.Permission fileManagementResult = await AndroidRuntimePermissions.RequestPermissionAsync("android.permission.MANAGE_EXTERNAL_STORAGE");
+#endif
+        }
     }
-}
 }
