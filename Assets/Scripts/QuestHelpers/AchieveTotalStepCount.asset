@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AchieveTotalStepCount
   m_EditorClassIdentifier: Assembly-CSharp::QuestInfoSO
   <id>k__BackingField: AchieveTotalStepCount
+  questImage: {fileID: 0}
   displayName: 
   levelRequired: 0
   totalStepsRequired: 300

@@ -3,14 +3,18 @@ using System;
 using TMPro;
 using UnityEngine;
 
+namespace HomeByMarch {
 public class StepCountDemo : MonoBehaviour
 {
-
     public TMP_Text text;
     public Canvas permissionCanvas;
-    void OnEnable(){
+    [SerializeField] FloatEventChannel stepCountChannel; // Added FloatEventChannel
+
+    void OnEnable()
+    {
         StepsToday();
     }
+
     void Start()
     {
         StepCounterRequest permissionRequest = new StepCounterRequest();
@@ -25,7 +29,10 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest stepRequest = new StepCounterRequest();
         stepRequest
             .Since(DateTime.Today)
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .Execute();
     }
 
@@ -45,7 +52,10 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest request = new StepCounterRequest();
         request
             .Between(DateTime.Now.AddMinutes(-10), DateTime.Now.AddMinutes(-5))
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
             .Execute();
     }
@@ -55,7 +65,10 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest request = new StepCounterRequest();
         request
             .Between(DateTime.Today.AddHours(9), DateTime.Today.AddHours(11))
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
             .Execute();
     }
@@ -65,7 +78,10 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest request = new StepCounterRequest();
         request
             .Since(DateTime.Now.AddMinutes(-5))
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
             .Execute();
     }
@@ -75,7 +91,10 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest request = new StepCounterRequest();
         request
             .Since(DateTime.Now.AddHours(-1))
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
             .Execute();
     }
@@ -85,7 +104,10 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest request = new StepCounterRequest();
         request
             .Since(DateTime.Today)
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
             .Execute();
     }
@@ -95,10 +117,12 @@ public class StepCountDemo : MonoBehaviour
         StepCounterRequest request = new StepCounterRequest();
         request
             .Between(DateTime.Today.AddDays(-1), DateTime.Today)
-            .OnQuerySuccess((value) => text.text = value.ToString())
+            .OnQuerySuccess((value) => {
+                text.text = value.ToString();
+                stepCountChannel?.Invoke(value); // Invoke the FloatEventChannel
+            })
             .OnPermissionDenied(() => permissionCanvas.gameObject.SetActive(true))
             .Execute();
     }
-
-
+}
 }

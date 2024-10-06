@@ -55,4 +55,10 @@ public class QuestLogScrollingList: MonoBehaviour{
         return questLogButton;
 
     }
+
+    public void DestroyQuestLogButton(Quest quest){
+        QuestLogButton questLogButton = idToButtonMap[quest.info.id];
+        Destroy(questLogButton.gameObject);
+        idToButtonMap.Remove(quest.info.id);
+    }
 }

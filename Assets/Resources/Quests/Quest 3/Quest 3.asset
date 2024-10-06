@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4b62a74b521d4b4d9c81c71283a1704, type: 3}
-  m_Name: JustClickAButton
+  m_Name: Quest 3
   m_EditorClassIdentifier: 
-  <id>k__BackingField: JustClickAButton
-  displayName: click
+  <id>k__BackingField: Quest 3
+  questImage: {fileID: 0}
+  displayName: Footsteps of Fortune
+  description: Fortune smiles on those who keep moving! Walk 1,500 steps to unlock
+    hidden treasures. Every extra step brings more fortune to your adventure!
   levelRequired: 1
-  totalStepsRequired: 0
+  totalStepsRequired: 100
   questPrerequesites: []
-  questStepPrefabs:
-  - {fileID: 7395311380180762844, guid: 7f8362dbc0f82ed4e9a28052dc1a6768, type: 3}
-  goldReward: 3
-  experienceReward: 5
+  questStepPrefabs: []
+  goldReward: 0
+  experienceReward: 0

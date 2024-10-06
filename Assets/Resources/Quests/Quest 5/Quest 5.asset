@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4b62a74b521d4b4d9c81c71283a1704, type: 3}
-  m_Name: JustClickAButton2
+  m_Name: Quest 5
   m_EditorClassIdentifier: 
-  <id>k__BackingField: JustClickAButton2
-  displayName: click2
+  <id>k__BackingField: Quest 5
+  questImage: {fileID: 0}
+  displayName: Walk the Walk
+  description: Show your commitment and walk 3,000 steps! True adventurers know that
+    consistency is key. Earn valuable rewards by proving you can walk the walk.
   levelRequired: 1
-  totalStepsRequired: 0
+  totalStepsRequired: 100
   questPrerequesites: []
-  questStepPrefabs:
-  - {fileID: 7395311380180762844, guid: 1210712c31b1a9c418ef0bf290092c7f, type: 3}
-  goldReward: 6
-  experienceReward: 35
+  questStepPrefabs: []
+  goldReward: 0
+  experienceReward: 0

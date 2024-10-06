@@ -28,7 +28,7 @@ namespace HomeByMarch
         void Awake()
         {
             Player = GameObject.FindGameObjectWithTag("Player").transform;
-            PlayerHealth = GetComponent<Health>();
+            PlayerHealth = Player.GetComponent<Health>(); // Correctly reference the player's health
         }
 
         void Start()
@@ -53,10 +53,12 @@ namespace HomeByMarch
 
         void Update()
         {
-            if(playerDetector.CanDetectPlayer())
+            if (playerDetector.CanDetectPlayer())
             {
-               healthBarPrefab.SetActive(true);
-            }else{
+                healthBarPrefab.SetActive(true);
+            }
+            else
+            {
                 healthBarPrefab.SetActive(false);
             }
             stateMachine.Update();
@@ -81,7 +83,7 @@ namespace HomeByMarch
             yield return new WaitForSeconds(attackDelay); // Wait for the specified delay
             if (playerDetector.CanAttackPlayer()) // Ensure player is still in range
             {
-                playerDetector.PlayerHealth.TakeDamage(10); // Apply damage after delay
+                PlayerHealth.TakeDamage(10); // Apply damage after delay
             }
         }
     }
