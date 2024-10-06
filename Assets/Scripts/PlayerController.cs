@@ -11,9 +11,9 @@ namespace HomeByMarch
         [Header("References")]
         Rigidbody rb;
         [SerializeField] FixedJoystick joystick;
-        // [SerializeField, Self] GroundChecker groundChecker;
         [SerializeField, Self] Animator animator;
         [SerializeField, Anywhere] InputReader input;
+        [SerializeField] EnemyDetector enemyDetector; // Reference to EnemyDetector
 
         [Header("Movement Settings")]
         [SerializeField] float moveSpeed = 6f;
@@ -63,6 +63,9 @@ namespace HomeByMarch
         // Animator parameters
         static readonly int Speed = Animator.StringToHash("Speed");
 
+        Transform Enemy;
+        Health EnemyHealth;
+
         void Awake()
         {
             rb = GetComponent<Rigidbody>();
@@ -70,6 +73,10 @@ namespace HomeByMarch
 
             SetupTimers();
             SetupStateMachine();
+
+            Enemy = GameObject.FindGameObjectWithTag("Enemy").transform;
+            EnemyHealth = Enemy.GetComponent<Health>();
+            enemyDetector = GetComponent<EnemyDetector>(); // Initialize EnemyDetector
         }
 
         void SetupStateMachine()
@@ -79,13 +86,9 @@ namespace HomeByMarch
 
             // Declare states
             var locomotionState = new LocomotionState(this, animator);
-            // var jumpState = new JumpState(this, animator);
-            // var dashState = new DashState(this, animator);
             var attackState = new AttackState(this, animator);
 
             // Define transitions
-            // At(locomotionState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
-            // At(locomotionState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
             At(locomotionState, attackState, new FuncPredicate(() => attackTimer.IsRunning));
             At(attackState, locomotionState, new FuncPredicate(() => !attackTimer.IsRunning));
             Any(locomotionState, new FuncPredicate(ReturnToLocomotionState));
@@ -144,36 +147,30 @@ namespace HomeByMarch
             if (!attackTimer.IsRunning)
             {
                 attackTimer.Start();
+                Attack(); // Call the Attack method when the attack is performed
             }
         }
 
         public void Attack()
         {
-            // Null check for Rigidbody and Animator
-            if (rb == null || animator == null)
+            if (rb == null || animator == null || enemyDetector == null)
             {
-                Debug.LogError("Required components (Rigidbody or Animator) are missing!");
+                Debug.LogError("Required components (Rigidbody, Animator, or EnemyDetector) are missing!");
                 return;
             }
 
-            // Get attack position
-            Vector3 attackPos = transform.position + transform.forward;
-            Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
-
-            // Handle enemy collision
-            foreach (var enemy in hitEnemies)
+            // Check if an enemy is detected and within attack range
+            if (enemyDetector.CanDetectEnemy() && enemyDetector.CanAttackEnemy())
             {
-                Debug.Log(enemy.name);
-                // Null check for Health component
-                var health = enemy.GetComponent<Health>();
-                if (health != null)
-                {
-                    health.TakeDamage(attackDamage);
-                }
-                else
-                {
-                    Debug.LogWarning($"{enemy.name} does not have a Health component!");
-                }
+                Debug.Log($"Attacking enemy: {enemyDetector.Enemy.name}");
+
+                // Apply damage to the enemy
+                // enemyDetector.EnemyHealth.TakeDamage(attackDamage);
+                Debug.Log($"Enemy {enemyDetector.Enemy.name} hit and took {attackDamage} damage.");
+            }
+            else
+            {
+                Debug.LogWarning("No enemy detected or enemy out of attack range!");
             }
         }
 
@@ -192,9 +189,7 @@ namespace HomeByMarch
         void Update()
         {
             stateMachine.Update();
-
             HandleTimers();
-            // UpdateAnimator();
         }
 
         void FixedUpdate()
