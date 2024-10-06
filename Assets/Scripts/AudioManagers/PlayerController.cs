@@ -1,294 +1,287 @@
-using System.Collections.Generic;
-using Cinemachine;
-using KBCore.Refs;
-using UnityEngine;
-using Utilities;
+// using System.Collections.Generic;
+// using Cinemachine;
+// using KBCore.Refs;
+// using UnityEngine;
+// using Utilities;
 
-namespace HomeByMarch
-{
-    public class PlayerController : ValidatedMonoBehaviour
-    {
-        [Header("References")]
-        Rigidbody rb;
-        [SerializeField] FixedJoystick joystick;
-        // [SerializeField, Self] GroundChecker groundChecker;
-        [SerializeField, Self] Animator animator;
-        [SerializeField, Anywhere] InputReader input;
+// namespace HomeByMarch
+// {
+//     public class PlayerController : ValidatedMonoBehaviour
+//     {
+//         [Header("References")]
+//         Rigidbody rb;
+//         [SerializeField] FixedJoystick joystick;
+//         // [SerializeField, Self] GroundChecker groundChecker;
+//         [SerializeField, Self] Animator animator;
+//         [SerializeField, Anywhere] InputReader input;
 
+//         [Header("Movement Settings")]
+//         [SerializeField] float moveSpeed = 6f;
+//         [SerializeField] float rotationSpeed = 15f;
+//         [SerializeField] float smoothTime = 0.2f;
+//         [SerializeField] bool useCharacterForward = false;
 
-        [Header("Movement Settings")]
-        [SerializeField] float moveSpeed = 6f;
-        [SerializeField] float rotationSpeed = 15f;
-        [SerializeField] float smoothTime = 0.2f;
-        [SerializeField] bool useCharacterForward = false;
+//         [SerializeField] float turnSpeed = 10f;
 
-        [SerializeField] float turnSpeed = 10f;
+//         [Header("Jump Settings")]
+//         [SerializeField] float jumpForce = 10f;
+//         [SerializeField] float jumpDuration = 0.5f;
+//         [SerializeField] float jumpCooldown = 0f;
+//         [SerializeField] float gravityMultiplier = 3f;
 
-        [Header("Jump Settings")]
-        [SerializeField] float jumpForce = 10f;
-        [SerializeField] float jumpDuration = 0.5f;
-        [SerializeField] float jumpCooldown = 0f;
-        [SerializeField] float gravityMultiplier = 3f;
+//         [Header("Dash Settings")]
+//         [SerializeField] float dashForce = 10f;
+//         [SerializeField] float dashDuration = 1f;
+//         [SerializeField] float dashCooldown = 2f;
 
-        [Header("Dash Settings")]
-        [SerializeField] float dashForce = 10f;
-        [SerializeField] float dashDuration = 1f;
-        [SerializeField] float dashCooldown = 2f;
+//         [Header("Attack Settings")]
+//         [SerializeField] float attackCooldown = 2f;
+//         [SerializeField] float attackDistance = 1f;
+//         [SerializeField] int attackDamage = 10;
 
-        [Header("Attack Settings")]
-        [SerializeField] float attackCooldown = 2f;
-        [SerializeField] float attackDistance = 1f;
-        [SerializeField] int attackDamage = 10;
+//         const float ZeroF = 0f;
 
-        const float ZeroF = 0f;
+//         Transform mainCam;
+//         Vector2 inputs;
+//         float currentSpeed;
+//         float velocity;
+//         float turnSpeedMultiplier;
+//         float jumpVelocity;
+//         float dashVelocity = 1f;
+//         float speed;
+//         Camera mainCamera;
+//         Vector3 targetDirection;
+//         List<Timer> timers;
+//         CountdownTimer jumpTimer;
+//         CountdownTimer jumpCooldownTimer;
+//         CountdownTimer dashTimer;
+//         CountdownTimer dashCooldownTimer;
+//         CountdownTimer attackTimer;
 
-        Transform mainCam;
-        Vector2 inputs;
-        float currentSpeed;
-        float velocity;
-        float turnSpeedMultiplier;
-        float jumpVelocity;
-        float dashVelocity = 1f;
-        float speed;
-        Camera mainCamera;
-        Vector3 targetDirection;
-        List<Timer> timers;
-        CountdownTimer jumpTimer;
-        CountdownTimer jumpCooldownTimer;
-        CountdownTimer dashTimer;
-        CountdownTimer dashCooldownTimer;
-        CountdownTimer attackTimer;
+//         StateMachine stateMachine;
 
-        StateMachine stateMachine;
+//         // Animator parameters
+//         static readonly int Speed = Animator.StringToHash("Speed");
 
-        // Animator parameters
-        static readonly int Speed = Animator.StringToHash("Speed");
+//         void Awake()
+//         {
+//             rb = GetComponent<Rigidbody>();
+//             mainCamera = Camera.main;
 
-        void Awake()
-        {
-            rb = GetComponent<Rigidbody>();
-            mainCamera = Camera.main;
+//             SetupTimers();
+//             SetupStateMachine();
+//         }
 
+//         void SetupStateMachine()
+//         {
+//             // State Machine
+//             stateMachine = new StateMachine();
 
-            SetupTimers();
-            SetupStateMachine();
-        }
+//             // Declare states
+//             var locomotionState = new LocomotionState(this, animator);
+//             // var jumpState = new JumpState(this, animator);
+//             // var dashState = new DashState(this, animator);
+//             var attackState = new AttackState(this, animator);
 
-        void SetupStateMachine()
-        {
-            // State Machine
-            stateMachine = new StateMachine();
+//             // Define transitions
+//             // At(locomotionState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
+//             // At(locomotionState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
+//             At(locomotionState, attackState, new FuncPredicate(() => attackTimer.IsRunning));
+//             At(attackState, locomotionState, new FuncPredicate(() => !attackTimer.IsRunning));
+//             Any(locomotionState, new FuncPredicate(ReturnToLocomotionState));
 
-            // Declare states
-            var locomotionState = new LocomotionState(this, animator);
-            // var jumpState = new JumpState(this, animator);
-            // var dashState = new DashState(this, animator);
-            var attackState = new AttackState(this, animator);
+//             // Set initial state
+//             stateMachine.SetState(locomotionState);
+//         }
 
-            // Define transitions
-            // At(locomotionState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
-            // At(locomotionState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
-            At(locomotionState, attackState, new FuncPredicate(() => attackTimer.IsRunning));
-            At(attackState, locomotionState, new FuncPredicate(() => !attackTimer.IsRunning));
-            Any(locomotionState, new FuncPredicate(ReturnToLocomotionState));
+//         bool ReturnToLocomotionState()
+//         {
+//             return !attackTimer.IsRunning;
+//         }
 
-            // Set initial state
-            stateMachine.SetState(locomotionState);
-        }
+//         void SetupTimers()
+//         {
+//             // Setup timers
+//             jumpTimer = new CountdownTimer(jumpDuration);
+//             jumpCooldownTimer = new CountdownTimer(jumpCooldown);
 
-        bool ReturnToLocomotionState()
-        {
-            return !attackTimer.IsRunning;
-        }
+//             jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
+//             jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
 
-        void SetupTimers()
-        {
-            // Setup timers
-            jumpTimer = new CountdownTimer(jumpDuration);
-            jumpCooldownTimer = new CountdownTimer(jumpCooldown);
+//             dashTimer = new CountdownTimer(dashDuration);
+//             dashCooldownTimer = new CountdownTimer(dashCooldown);
 
-            jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
-            jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
+//             dashTimer.OnTimerStart += () => dashVelocity = dashForce;
+//             dashTimer.OnTimerStop += () =>
+//             {
+//                 dashVelocity = 1f;
+//                 dashCooldownTimer.Start();
+//             };
 
-            dashTimer = new CountdownTimer(dashDuration);
-            dashCooldownTimer = new CountdownTimer(dashCooldown);
+//             attackTimer = new CountdownTimer(attackCooldown);
 
-            dashTimer.OnTimerStart += () => dashVelocity = dashForce;
-            dashTimer.OnTimerStop += () =>
-            {
-                dashVelocity = 1f;
-                dashCooldownTimer.Start();
-            };
+//             timers = new(5) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, attackTimer };
+//         }
 
-            attackTimer = new CountdownTimer(attackCooldown);
+//         void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
+//         void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
 
-            timers = new(5) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, attackTimer };
-        }
+//         void Start() => input.EnablePlayerActions();
 
-        void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
-        void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
+//         void OnEnable()
+//         {
+//             input.Dash += OnDash;
+//             input.Attack += OnAttack;
+//         }
 
-        void Start() => input.EnablePlayerActions();
+//         void OnDisable()
+//         {
+//             input.Attack -= OnAttack;
+//         }
 
-        void OnEnable()
-        {
+//         void OnAttack()
+//         {
+//             if (!attackTimer.IsRunning)
+//             {
+//                 attackTimer.Start();
+//             }
+//         }
 
-            input.Dash += OnDash;
-            input.Attack += OnAttack;
-        }
+//         public void Attack()
+//         {
+//             // Null check for Rigidbody and Animator
+//             if (rb == null || animator == null)
+//             {
+//                 Debug.LogError("Required components (Rigidbody or Animator) are missing!");
+//                 return;
+//             }
 
-        void OnDisable()
-        {
+//             // Get attack position
+//             Vector3 attackPos = transform.position + transform.forward;
+//             Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
 
-            input.Attack -= OnAttack;
-        }
+//             // Handle enemy collision
+//             foreach (var enemy in hitEnemies)
+//             {
+//                 Debug.Log(enemy.name);
+//                 // Null check for Health component
+//                 var health = enemy.GetComponent<Health>();
+//                 if (health != null)
+//                 {
+//                     health.TakeDamage(attackDamage);
+//                 }
+//                 else
+//                 {
+//                     Debug.LogWarning($"{enemy.name} does not have a Health component!");
+//                 }
+//             }
+//         }
 
-        void OnAttack()
-        {
-            if (!attackTimer.IsRunning)
-            {
-                attackTimer.Start();
-            }
-        }
+//         void OnDash(bool performed)
+//         {
+//             if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning)
+//             {
+//                 dashTimer.Start();
+//             }
+//             else if (!performed && dashTimer.IsRunning)
+//             {
+//                 dashTimer.Stop();
+//             }
+//         }
 
-        public void Attack()
-        {
-            // Vector3 attackPos = transform.position + transform.forward;
-            // Collider[] hitEnemies = Physics.OverlapSphere(attackPos, attackDistance);
+//         void Update()
+//         {
+//             stateMachine.Update();
 
-            // foreach (var enemy in hitEnemies) {
-            //     Debug.Log(enemy.name);
-            //     if (enemy.CompareTag("Enemy")) {
-            //         enemy.GetComponent<Health>().TakeDamage(attackDamage);
-            //     }
-            // }
-        }
+//             HandleTimers();
+//             // UpdateAnimator();
+//         }
 
-        void OnDash(bool performed)
-        {
-            if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning)
-            {
-                dashTimer.Start();
-            }
-            else if (!performed && dashTimer.IsRunning)
-            {
-                dashTimer.Stop();
-            }
-        }
+//         void FixedUpdate()
+//         {
+// #if ENABLE_LEGACY_INPUT_MANAGER
+//             inputs.x = joystick.Horizontal;
+//             inputs.y = joystick.Vertical;
 
-        void Update()
-        {
-            stateMachine.Update();
+//             stateMachine.FixedUpdate();
+// #else
+//             InputSystemHelper.EnableBackendsWarningMessage();
+// #endif
+//         }
 
-            HandleTimers();
-            // UpdateAnimator();
-        }
+//         void UpdateAnimator()
+//         {
+//             animator.SetFloat(Speed, currentSpeed);
+//         }
 
-        void FixedUpdate()
-        {
-#if ENABLE_LEGACY_INPUT_MANAGER
-                inputs.x = joystick.Horizontal;
-                inputs.y = joystick.Vertical;
-  
-                stateMachine.FixedUpdate();
-#else
-            InputSystemHelper.EnableBackendsWarningMessage();
-# endif
-        }
+//         void HandleTimers()
+//         {
+//             foreach (var timer in timers)
+//             {
+//                 timer.Tick(Time.deltaTime);
+//             }
+//         }
 
-        void UpdateAnimator()
-        {
-            animator.SetFloat(Speed, currentSpeed);
-        }
+//         public void HandleMovement()
+//         {
+//             if (useCharacterForward)
+//             {
+//                 speed = Mathf.Abs(inputs.x) + inputs.y;
+//             }
+//             else
+//             {
+//                 speed = Mathf.Abs(inputs.x) + Mathf.Abs(inputs.y);
+//             }
 
-        void HandleTimers()
-        {
-            foreach (var timer in timers)
-            {
-                timer.Tick(Time.deltaTime);
-            }
-        }
+//             speed = Mathf.Clamp(speed, 0f, 1f);
+//             speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
+//             animator.SetFloat("Speed", speed);
 
-        // public void HandleJump() {
-        //     // If not jumping and grounded, keep jump velocity at 0
-        //     if (!jumpTimer.IsRunning && groundChecker.IsGrounded) {
-        //         jumpVelocity = ZeroF;
-        //         return;
-        //     }
+//             UpdateTargetDirection();
 
-        //     if (!jumpTimer.IsRunning) {
-        //         // Gravity takes over
-        //         jumpVelocity += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
-        //     }
+//             Vector3 moveDirection = new Vector3(inputs.x * moveSpeed, rb.velocity.y, inputs.y * moveSpeed);
+//             rb.velocity = moveDirection;
 
-        //     // Apply velocity
-        //     rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
-        // }
+//             if (inputs != Vector2.zero && targetDirection.magnitude > 0.1f)
+//             {
+//                 HandleRotation();
+//             }
+//         }
 
-        public void HandleMovement()
-            {
-                if (useCharacterForward)
-                {
-                    speed = Mathf.Abs(inputs.x) + inputs.y;
-                }
-                else
-                {
-                    speed = Mathf.Abs(inputs.x) + Mathf.Abs(inputs.y);
-                }
+//         public void UpdateTargetDirection()
+//         {
+//             if (!useCharacterForward)
+//             {
+//                 turnSpeedMultiplier = 1f;
+//                 Vector3 forward = mainCamera.transform.TransformDirection(Vector3.forward);
+//                 forward.y = 0;
+//                 Vector3 right = mainCamera.transform.TransformDirection(Vector3.right);
+//                 targetDirection = inputs.x * right + inputs.y * forward;
+//             }
+//             else
+//             {
+//                 turnSpeedMultiplier = 0.2f;
+//                 Vector3 forward = transform.TransformDirection(Vector3.forward);
+//                 forward.y = 0;
+//                 Vector3 right = transform.TransformDirection(Vector3.right);
+//                 targetDirection = inputs.x * right + Mathf.Abs(inputs.y) * forward;
+//             }
+//         }
 
-                speed = Mathf.Clamp(speed, 0f, 1f);
-                speed = Mathf.SmoothDamp(animator.GetFloat("Speed"), speed, ref velocity, 0.1f);
-                animator.SetFloat("Speed", speed);
+//         void HandleRotation()
+//         {
+//             Vector3 lookDirection = targetDirection.normalized;
+//             Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
+//             float differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
+//             float eulerY = transform.eulerAngles.y;
 
-                UpdateTargetDirection();
+//             if (differenceRotation != 0)
+//             {
+//                 eulerY = freeRotation.eulerAngles.y;
+//             }
 
-                Vector3 moveDirection = new Vector3(inputs.x * moveSpeed, rb.velocity.y, inputs.y * moveSpeed);
-                rb.velocity = moveDirection;
-
-                if (inputs != Vector2.zero && targetDirection.magnitude > 0.1f)
-                {
-                    HandleRotation();
-                }
-            }
-
-
-            public void UpdateTargetDirection()
-            {
-                if (!useCharacterForward)
-                {
-                    turnSpeedMultiplier = 1f;
-                    Vector3 forward = mainCamera.transform.TransformDirection(Vector3.forward);
-                    forward.y = 0;
-                    Vector3 right = mainCamera.transform.TransformDirection(Vector3.right);
-                    targetDirection = inputs.x * right + inputs.y * forward;
-                }
-                else
-                {
-                    turnSpeedMultiplier = 0.2f;
-                    Vector3 forward = transform.TransformDirection(Vector3.forward);
-                    forward.y = 0;
-                    Vector3 right = transform.TransformDirection(Vector3.right);
-                    targetDirection = inputs.x * right + Mathf.Abs(inputs.y) * forward;
-                }
-            }
-            void HandleRotation()
-            {
-                Vector3 lookDirection = targetDirection.normalized;
-                Quaternion freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
-                float differenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
-                float eulerY = transform.eulerAngles.y;
-
-                if (differenceRotation != 0)
-                {
-                    eulerY = freeRotation.eulerAngles.y;
-                }
-
-                Vector3 euler = new Vector3(0, eulerY, 0);
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
-            }
-
-
-
-
-    }
-}
+//             Vector3 euler = new Vector3(0, eulerY, 0);
+//             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
+//         }
+//     }
+// }

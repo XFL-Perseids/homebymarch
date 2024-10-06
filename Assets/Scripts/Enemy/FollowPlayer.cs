@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
-    public float speed = 1.0f;
+    public float speed = 10.0f;
     public float smoothing = 0.1f; // Smoothing factor for animation blending
     public Transform target;
     private Animator animator;

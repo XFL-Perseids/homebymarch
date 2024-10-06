@@ -1,78 +1,45 @@
 using UnityEngine;
-using UnityEngine.UI; // Required to access UI components
-using TMPro;         // Required to use TextMeshProUGUI
+using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+namespace HomeByMarch
 {
-    [Header("Health Settings")]
-    public float maxHealth = 100f; // Maximum health
-    public float currentHealth;    // Current health value
-
-    [Header("UI Settings")]
-    public Image healthBarImage;         // Reference to the UI Image for the health bar
-    public TextMeshProUGUI healthText;   // Reference to the TextMeshProUGUI for health display
-
-    // Start is called before the first frame update
-    void Start()
+    public class PlayerHealth : MonoBehaviour
     {
-        // Initialize the player's current health to maxHealth
-        currentHealth = maxHealth;
+        public float health;
+        public float maxHealth;
+        public Image healthBar;
 
-        // Set the health bar and text to full at the start
-        UpdateHealthBar();
-        UpdateHealthText();
-    }
-
-    // Method to reduce the player's health when called from another script
-    public void OnButtonClickReduceHealth(float damageAmount)
-    {
-        TakeDamage(damageAmount); // Call the TakeDamage method to reduce health
-    }
-
-    // Method to reduce the player's health
-    public void TakeDamage(float damageAmount)
-    {
-        currentHealth -= damageAmount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Ensure health doesn't go below 0
-
-        // Update the health bar UI and health text after taking damage
-        UpdateHealthBar();
-        UpdateHealthText();
-
-        // Check if player health reaches zero
-        if (currentHealth <= 0)
+        void Start()
         {
-            Die();
+            health = maxHealth;
         }
-    }
 
-    // Method to update the health bar UI
-    public void UpdateHealthBar()
-    {
-        // Calculate the fill amount (between 0 and 1) based on current health
-        float fillAmount = currentHealth / maxHealth;
-
-        // Update the health bar image's fill amount
-        if (healthBarImage != null)
+        void Update()
         {
-            healthBarImage.fillAmount = fillAmount;
+            // Update the health bar based on the current health
+            healthBar.fillAmount = Mathf.Clamp(health / maxHealth, 0.0f, 1.0f);
         }
-    }
 
-    // Method to update the health text UI
-    public void UpdateHealthText()
-    {
-        // Display the current and max health as a string (e.g., "90/100")
-        if (healthText != null)
+        // Method to take damage
+        public void TakeDamage(float damageAmount)
         {
-            healthText.text = currentHealth + "/" + maxHealth;
-        }
-    }
+            health -= damageAmount;
 
-    // Method called when the player's health reaches zero
-    void Die()
-    {
-        Debug.Log("Player Died");
-        // Add death-related logic here (e.g., respawning, game over, etc.)
+            // Ensure health doesn't drop below zero
+            health = Mathf.Clamp(health, 0.0f, maxHealth);
+
+            // Check if the player is dead
+            if (health <= 0)
+            {
+               Debug.Log("enemy died");
+            }
+        }
+
+        // Method to handle player's death
+        private void Die()
+        {
+            Debug.Log("Player has died.");
+            // Additional logic for when the player dies (e.g., respawn, game over screen)
+        }
     }
 }

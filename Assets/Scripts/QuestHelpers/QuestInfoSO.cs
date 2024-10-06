@@ -9,9 +9,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "QuestInfoSO", menuName = "ScriptableObjects/QuestInfoSO", order = 1)]
 public class QuestInfoSO : ScriptableObject{
     [field: SerializeField]public string id {get; private set;}
-
+    
+    [Header("Image")]
+    public Sprite questImage;
+    
     [Header("General")]
     public string displayName;
+    public string description; // Added quest description
 
     [Header("Requirements")]
     public int levelRequired;
@@ -32,8 +36,5 @@ public class QuestInfoSO : ScriptableObject{
         id = this.name;
         UnityEditor.EditorUtility.SetDirty(this);
         #endif
-
-
     }
-
 }

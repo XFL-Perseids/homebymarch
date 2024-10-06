@@ -10,7 +10,7 @@ namespace HomeByMarch {
         [SerializeField] float attackRange = 2f; // Distance from enemy to player to attack
         
         public Transform Player { get; private set; }
-        // public Health PlayerHealth { get; private set; }
+        public Health PlayerHealth { get; private set; }
         
         CountdownTimer detectionTimer;
         
@@ -18,7 +18,7 @@ namespace HomeByMarch {
 
         void Awake() {
             Player = GameObject.FindGameObjectWithTag("Player").transform; // Make sure to TAG the player!
-            // PlayerHealth = Player.GetComponent<Health>();
+            PlayerHealth = Player.GetComponent<Health>();
         }
 
         void Start() {

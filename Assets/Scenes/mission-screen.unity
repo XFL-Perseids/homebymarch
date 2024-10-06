@@ -205,7 +205,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 119733949}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -970,6 +970,8 @@ MonoBehaviour:
   questStatusText: {fileID: 788932343}
   goldRewardText: {fileID: 454503406}
   experienceRewardText: {fileID: 792981573}
+  claimQuestButtonPrefab: {fileID: 2992251849448245368, guid: 3fbd515f510de4a449273779a5467f89,
+    type: 3}
 --- !u!1 &264895195
 GameObject:
   m_ObjectHideFlags: 0
@@ -1749,6 +1751,8 @@ MonoBehaviour:
   questStatusText: {fileID: 788932343}
   goldRewardText: {fileID: 454503406}
   experienceRewardText: {fileID: 792981573}
+  claimQuestButtonPrefab: {fileID: 2992251849448245368, guid: 3fbd515f510de4a449273779a5467f89,
+    type: 3}
 --- !u!1 &788932341
 GameObject:
   m_ObjectHideFlags: 0
@@ -2647,7 +2651,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 47.658997, y: -3.6145935}
+  m_AnchoredPosition: {x: 47.658936, y: -3.614624}
   m_SizeDelta: {x: -213.822, y: -95.0566}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1076157213
@@ -3313,6 +3317,7 @@ GameObject:
   - component: {fileID: 1308300675}
   - component: {fileID: 1308300674}
   - component: {fileID: 1308300673}
+  - component: {fileID: 1308300676}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -3411,6 +3416,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1308300676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308300671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1353639073
 GameObject:
   m_ObjectHideFlags: 0
@@ -3879,6 +3901,8 @@ MonoBehaviour:
   questStatusText: {fileID: 788932343}
   goldRewardText: {fileID: 454503406}
   experienceRewardText: {fileID: 792981573}
+  claimQuestButtonPrefab: {fileID: 2992251849448245368, guid: 3fbd515f510de4a449273779a5467f89,
+    type: 3}
 --- !u!1 &1541673532
 GameObject:
   m_ObjectHideFlags: 0
@@ -4277,7 +4301,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 47.658997, y: -3.6143951}
+  m_AnchoredPosition: {x: 47.658936, y: -3.61438}
   m_SizeDelta: {x: -213.82, y: -95.056}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1636677789
