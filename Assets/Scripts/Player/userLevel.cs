@@ -27,23 +27,20 @@ public class UserLevel : MonoBehaviour{
     public int remainingStepsForNextLevel;
     private string stepCountData;
 
+    
+
 
     void Awake(){
+
         stepJsonFilePath = Application.persistentDataPath + "/stepData.json";
         stepCountData = System.IO.File.ReadAllText(stepJsonFilePath);
-        currentStepCount = JsonUtility.FromJson<StepData>(stepCountData).numberOfSteps;
 
-        
-        currentUserLevel = CalculateUserLevel(currentStepCount);
-        totalStepsForNextLevel = CalculateTotalStepsForLevel(currentUserLevel);
     }
 
     void Update(){
 
-        currentUserLevel = CalculateUserLevel(currentStepCount);
-        totalStepsForNextLevel = CalculateTotalStepsForLevel(currentUserLevel + 1);
-        currentStepCount = JsonUtility.FromJson<StepData>(stepCountData).numberOfSteps;
-        remainingStepsForNextLevel = totalStepsForNextLevel - currentStepCount;
+        
+        UpdateInformation();
         UpdateText();
         UpdateExperienceBar();
         
@@ -53,19 +50,7 @@ public class UserLevel : MonoBehaviour{
 
     }
 
-    public int CalculateUserLevel(int stepCount){
-        
 
-
-
-            
-
-
-        return Mathf.FloorToInt(Mathf.Pow((stepCount / 100), (1/2.35f))) + 1;
-
-
-
-    }
 
     public int CalculateTotalStepsForLevel(int level){
 
@@ -79,6 +64,21 @@ public class UserLevel : MonoBehaviour{
         currentStepCountText.text = "Total steps: " + currentStepCount.ToString();
         totalStepsForNextLevelText.text = "Walk a total of " + ReformatIntToText(totalStepsForNextLevel) + " steps to advance to Level " + (currentUserLevel + 1);
         
+
+    }
+
+    void UpdateInformation(){
+
+
+        stepCountData = System.IO.File.ReadAllText(stepJsonFilePath);
+
+        totalStepsForNextLevel = CalculateTotalStepsForLevel(currentUserLevel + 1);
+        currentStepCount = JsonUtility.FromJson<StepData>(stepCountData).numberOfSteps;
+        remainingStepsForNextLevel = totalStepsForNextLevel - currentStepCount;
+
+        if(currentStepCount >= totalStepsForNextLevel){
+            currentUserLevel++;
+        }
 
     }
 
