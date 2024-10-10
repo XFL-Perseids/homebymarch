@@ -10,15 +10,17 @@ namespace HomeByMarch
     [RequireComponent(typeof(PlayerDetector))]
     public class Enemy : Entity
     {
+
+        int currentHealth;
+        [SerializeField] public int maxHealth;
         [SerializeField] PlayerDetector playerDetector;
         [SerializeField] private NavMeshAgent agent;
         [SerializeField] private Animator animator;
         [SerializeField] float timeBetweenAttack = 1f;
         [SerializeField] float attackDelay = 0.8f; // Delay before the damage is applied
-
         [SerializeField] float wanderRadius = 10f;
-
         [SerializeField] private GameObject healthBarPrefab;
+
         private StateMachine stateMachine;
         public Transform Player { get; private set; }
         public Health PlayerHealth { get; private set; }
@@ -29,6 +31,7 @@ namespace HomeByMarch
         {
             Player = GameObject.FindGameObjectWithTag("Player").transform;
             PlayerHealth = Player.GetComponent<Health>(); // Correctly reference the player's health
+            currentHealth = maxHealth;
         }
 
         void Start()
@@ -39,11 +42,13 @@ namespace HomeByMarch
             var wanderState = new EnemyWanderState(this, animator, agent, wanderRadius);
             var chaseState = new EnemyChaseState(this, animator, agent, playerDetector.Player);
             var attackState = new EnemyAttackState(this, animator, agent, playerDetector.Player);
+            var deathState = new EnemyDeathState(this, animator, agent); // Add death state
 
             At(wanderState, chaseState, new FuncPredicate(() => playerDetector.CanDetectPlayer()));
             At(chaseState, wanderState, new FuncPredicate(() => !playerDetector.CanDetectPlayer()));
             At(chaseState, attackState, new FuncPredicate(() => playerDetector.CanAttackPlayer()));
             At(attackState, chaseState, new FuncPredicate(() => !playerDetector.CanAttackPlayer()));
+            Any(deathState, new FuncPredicate(() => currentHealth <= 0)); // Transition to death state if health is 0 or less
 
             stateMachine.SetState(wanderState);
         }
@@ -85,6 +90,21 @@ namespace HomeByMarch
             {
                 PlayerHealth.TakeDamage(10); // Apply damage after delay
             }
+        }
+
+        public void TakeDamage(int amount)
+        {
+            currentHealth -= amount;
+
+            if (currentHealth <= 0)
+            {
+                stateMachine.SetState(new EnemyDeathState(this, animator, agent)); // Set the death state
+            }
+        }
+
+        void Death()
+        {
+            // This is now managed by the EnemyDeathState, so this method can be left empty
         }
     }
 }

@@ -11,6 +11,8 @@ public class ClickButtonStep : QuestStep
     int stepcount = 30;
     void OnEnable(){
 
+        
+
         // button.onClick.AddListener(CompleteQuest);
         //listener
 
