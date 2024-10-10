@@ -35,9 +35,17 @@ namespace HomeByMarch
         [SerializeField] float dashCooldown = 2f;
 
         [Header("Attack Settings")]
-        [SerializeField] float attackCooldown = 2f;
-        [SerializeField] float attackDistance = 1f;
-        [SerializeField] int attackDamage = 10;
+        [SerializeField] public float attackCooldown = 0.5f;
+        [SerializeField] public float attackDistance = 10f;
+        [SerializeField] public int attackDamage = 10;
+        [SerializeField] public int attackDelay = 10;
+        [SerializeField] public int attackSpeed = 2;
+        public LayerMask attackLayer;
+
+        bool attacking = false;
+        bool readyToAttack = true;
+        int attackCount;
+
 
         const float ZeroF = 0f;
 
@@ -70,6 +78,11 @@ namespace HomeByMarch
         {
             rb = GetComponent<Rigidbody>();
             mainCamera = Camera.main;
+            attackLayer = LayerMask.GetMask("Enemy");
+            if (mainCamera == null)
+            {
+                Debug.LogError("Main Camera is not assigned or could not be found.");
+            }
 
             SetupTimers();
             SetupStateMachine();
@@ -133,7 +146,6 @@ namespace HomeByMarch
 
         void OnEnable()
         {
-            input.Dash += OnDash;
             input.Attack += OnAttack;
         }
 
@@ -153,43 +165,101 @@ namespace HomeByMarch
 
         public void Attack()
         {
-            if (rb == null || animator == null || enemyDetector == null)
-            {
-                Debug.LogError("Required components (Rigidbody, Animator, or EnemyDetector) are missing!");
-                return;
-            }
 
-            // Check if an enemy is detected and within attack range
-            if (enemyDetector.CanDetectEnemy() && enemyDetector.CanAttackEnemy())
-            {
-                Debug.Log($"Attacking enemy: {enemyDetector.Enemy.name}");
+            if (!readyToAttack) return; // Only proceed if we are ready to attack
 
-                // Apply damage to the enemy
-                // enemyDetector.EnemyHealth.TakeDamage(attackDamage);
-                Debug.Log($"Enemy {enemyDetector.Enemy.name} hit and took {attackDamage} damage.");
+            // Start the attack timer and initiate the attack logic
+            readyToAttack = false;
+            attacking = true;
+
+            // Call the raycast to check for enemies and deal damage
+            AttackRayCast();
+
+            // Reset the attack state after the attack cooldown
+            Invoke(nameof(ResetAttack), attackCooldown);
+            // Invoke(nameof(ResetAttack), attackSpeed);
+            // Invoke(nameof(AttackRayCast), attackDelay);
+            // if (rb == null || animator == null || enemyDetector == null)
+            // {
+            //     Debug.LogError("Required components (Rigidbody, Animator, or EnemyDetector) are missing!");
+            //     return;
+            // }
+
+            // // Check if an enemy is detected and within attack range
+            // if (enemyDetector.CanDetectEnemy() && enemyDetector.CanAttackEnemy())
+            // {
+            //     Debug.Log($"Attacking enemy: {enemyDetector.Enemy.name}");
+
+            //     // Apply damage to the enemy
+            //     enemyDetector.EnemyHealth.TakeDamage(attackDamage);
+            //     Debug.Log($"Enemy {enemyDetector.Enemy.name} hit and took {attackDamage} damage.");
+            // }
+            // else
+            // {
+            //     Debug.LogWarning("No enemy detected or enemy out of attack range!");
+            // }
+        }
+
+        void ResetAttack()
+        {
+            readyToAttack = true;
+            attacking = false;
+        }
+        void AttackRayCast()
+        {
+            Debug.Log("AttackRayCast initiated");
+
+            // Adjust the ray origin and direction
+            Vector3 rayOrigin = transform.position + Vector3.up * 1f; // Adjust for the player's height if necessary
+            Vector3 rayDirection = transform.forward;
+
+            // Debug the raycast by drawing it in the scene view
+            Vector3 endPoint = rayOrigin + rayDirection * attackDistance;
+            Debug.DrawLine(rayOrigin, endPoint, Color.blue, 6f);
+
+            // Perform the raycast
+            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, attackDistance, attackLayer))
+            {
+                Debug.Log($"Hit object: {hit.transform.name} at position: {hit.point}");
+                
+                // Hit an enemy, apply damage
+                //change Actor to Health Component or any component that contains take damage
+                if (hit.transform.TryGetComponent<Enemy>(out Enemy enemyComponent))
+                {
+                    // Apply damage to the enemy
+                    enemyComponent.TakeDamage(attackDamage);
+                    Debug.Log($"Enemy {enemyComponent.name} took {attackDamage} damage.");
+                }
+                else
+                {
+                    Debug.LogWarning("Hit object is not an enemy.");
+                }
             }
             else
             {
-                Debug.LogWarning("No enemy detected or enemy out of attack range!");
+                Debug.LogWarning("Raycast did not hit any objects.");
             }
         }
 
-        void OnDash(bool performed)
+
+
+        void HitTarget(Vector3 pos)
         {
-            if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning)
-            {
-                dashTimer.Start();
-            }
-            else if (!performed && dashTimer.IsRunning)
-            {
-                dashTimer.Stop();
-            }
+            Debug.Log("Hit target");
+            // audioSource.pitch = 1;
+            // audioSource.PlayOneShot(hitSound);
+
+            // GameObject GO = Instantiate(hitEffect, pos, Quaternion.identity);
+            // Destroy(GO, 20);
         }
+
+
 
         void Update()
         {
             stateMachine.Update();
             HandleTimers();
+            // if (input.Attack.IsPressed()) { Attack(); }
         }
 
         void FixedUpdate()
@@ -280,3 +350,4 @@ namespace HomeByMarch
         }
     }
 }
+
