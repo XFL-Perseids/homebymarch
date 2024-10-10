@@ -54,7 +54,7 @@ public class UserLevel : MonoBehaviour{
 
     public int CalculateTotalStepsForLevel(int level){
 
-        return Mathf.FloorToInt(100 * Mathf.Pow(level - 1, 2.35f));
+        return (100 * Mathf.FloorToInt(Mathf.Pow(level - 1, 2.35f)));
 
     }
 
