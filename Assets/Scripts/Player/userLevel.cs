@@ -84,7 +84,7 @@ public class UserLevel : MonoBehaviour{
 
     public string ReformatIntToText(int number){
 
-        if (number >= 1000){
+        if (number >= 10000){
             return "" + Mathf.Floor(number / 1000) + "K";
         } else {
             return number.ToString();
