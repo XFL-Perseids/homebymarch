@@ -2453,6 +2453,10 @@ PrefabInstance:
       propertyPath: joystick
       value: 
       objectReference: {fileID: 1640369396}
+    - target: {fileID: 240495869672435250, guid: 15f32a9777aa6f24db5a5165707fed9d, type: 3}
+      propertyPath: enemyDetector
+      value: 
+      objectReference: {fileID: 1854274476}
     - target: {fileID: 7195934529245441824, guid: 15f32a9777aa6f24db5a5165707fed9d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -347.92
@@ -3127,7 +3131,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3725435839408625589, guid: e91b9a77daf030f48afd7a4189680c37, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -31.299927
+      value: -31.300049
       objectReference: {fileID: 0}
     - target: {fileID: 3977456040580603845, guid: e91b9a77daf030f48afd7a4189680c37, type: 3}
       propertyPath: m_LocalScale.x
@@ -5299,6 +5303,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1847460504}
   m_CullTransparentMesh: 1
+--- !u!114 &1854274476 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6376947959965363026, guid: 15f32a9777aa6f24db5a5165707fed9d, type: 3}
+  m_PrefabInstance: {fileID: 824055033}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25f99c4a1b3e4ec4185927bbb84396c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1870430491
 GameObject:
   m_ObjectHideFlags: 0
@@ -5731,6 +5746,7 @@ GameObject:
   - component: {fileID: 1951786104}
   - component: {fileID: 1951786103}
   - component: {fileID: 1951786102}
+  - component: {fileID: 1951786105}
   m_Layer: 5
   m_Name: Attack Button
   m_TagString: Untagged
@@ -5839,6 +5855,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1951786100}
   m_CullTransparentMesh: 1
+--- !u!114 &1951786105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951786100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d54531977ecb194c95e2d3aa7a5d72a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ControlPath: <Gamepad>/rightTrigger
 --- !u!1 &1953284408
 GameObject:
   m_ObjectHideFlags: 0
@@ -6745,6 +6774,14 @@ PrefabInstance:
     - target: {fileID: 4177067177127032553, guid: 13a5de6a55f09d744976956bfee10b17, type: 3}
       propertyPath: m_Name
       value: Game Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 4442469347137264330, guid: 13a5de6a55f09d744976956bfee10b17, type: 3}
+      propertyPath: m_ShowDebugText
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4442469347137264330, guid: 13a5de6a55f09d744976956bfee10b17, type: 3}
+      propertyPath: m_ShowCameraFrustum
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
