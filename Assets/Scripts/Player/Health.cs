@@ -1,7 +1,9 @@
 using UnityEngine;
 
-namespace HomeByMarch {
-    public class Health : MonoBehaviour {
+namespace HomeByMarch
+{
+    public class Health : MonoBehaviour
+    {
         [SerializeField] int maxHealth = 100;
         [SerializeField] FloatEventChannel playerHealthChannel;
 
@@ -12,25 +14,32 @@ namespace HomeByMarch {
 
         public bool IsDead => currentHealth <= 0;
 
-        void Awake() {
+        void Awake()
+        {
             currentHealth = maxHealth;
         }
 
-        void Start() {
+        void Start()
+        {
             PublishHealthPercentage();
         }
 
-        public void TakeDamage(int damage) {
+        public void TakeDamage(int damage)
+        {
+            if (IsDead) return; // Prevent taking damage if already dead
+
             currentHealth -= damage;
             PublishHealthPercentage();
-            // OnDamageTaken?.Invoke(); // Notify listeners that damage was taken
+            OnDamageTaken?.Invoke(); // Notify listeners that damage was taken
 
-            if (IsDead) {
+            if (IsDead)
+            {
                 Debug.Log("Player is dead!");
             }
         }
 
-        void PublishHealthPercentage() {
+        void PublishHealthPercentage()
+        {
             if (playerHealthChannel != null)
                 playerHealthChannel.Invoke(currentHealth / (float)maxHealth);
         }
