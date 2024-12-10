@@ -640,8 +640,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 84, y: -254}
-  m_SizeDelta: {x: 1028.5819, y: -333.6873}
+  m_AnchoredPosition: {x: 84, y: -257.82123}
+  m_SizeDelta: {x: 1572.7676, y: -346.8001}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &261033859
 MonoBehaviour:
@@ -5586,6 +5586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55f290761b030e44e92e50cdf2f51cfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  images: {fileID: 1362898913}
   titleText: {fileID: 261033859}
   bodyText: {fileID: 1559482510}
   sceneNames:
@@ -8517,7 +8518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6583100724217871842, guid: e893207ca5da72246be1ba47d8375926, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8942885812029979616, guid: e893207ca5da72246be1ba47d8375926, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
