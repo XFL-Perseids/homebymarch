@@ -1032,6 +1032,18 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5026551939474516603, guid: e893207ca5da72246be1ba47d8375926, type: 3}
+      propertyPath: m_Color.b
+      value: 0.7483446
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026551939474516603, guid: e893207ca5da72246be1ba47d8375926, type: 3}
+      propertyPath: m_Color.g
+      value: 0.8171931
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026551939474516603, guid: e893207ca5da72246be1ba47d8375926, type: 3}
+      propertyPath: m_Color.r
+      value: 0.87169814
+      objectReference: {fileID: 0}
     - target: {fileID: 6453234334591391122, guid: e893207ca5da72246be1ba47d8375926, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
