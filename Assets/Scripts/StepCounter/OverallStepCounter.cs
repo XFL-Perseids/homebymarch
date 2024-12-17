@@ -34,6 +34,7 @@ public class OverallStepCounter : MonoBehaviour{
 
     void Update(){
         GetOverallSteps();
+        Debug.Log("Overall steps: " + overallSteps);
         // overallStepsText.text = "Overall steps: " +  overallSteps;
         // overallStepsBeforeTodayText.text = "Overall steps before today: " + overallStepsBeforeToday;
     }
