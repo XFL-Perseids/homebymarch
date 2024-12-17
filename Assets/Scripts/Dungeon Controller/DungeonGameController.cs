@@ -26,12 +26,28 @@ public class DungeonGameController : MonoBehaviour
     // New boolean to choose between time limit or defeating enemies
     public bool useTimeLimit = true;    // Toggle for time limit or not (set in Editor)
 
+    // PlayerPrefs key format for dungeon completion
+    private string GetDungeonFinishedKey(int dungeonId)
+    {
+        return "DungeonFinished_" + dungeonId;
+    }
+
+    // ID of the current dungeon
+    public int dungeonId;  // Set this to identify each dungeon (e.g., Dungeon 1, Dungeon 2)
+
     void Start()
     {
         // Add listener to the start button to start the game
         startButton.onClick.AddListener(StartGame);
         winPanel.SetActive(false); // Make sure the win panel is hidden at the start
         challengePanel.SetActive(false); // Make sure the challenge panel is hidden at the start
+
+        // Check if this dungeon is already finished
+        if (PlayerPrefs.GetInt(GetDungeonFinishedKey(dungeonId), 0) == 1)
+        {
+            // Handle logic if the dungeon is finished (e.g., disable further challenges)
+            Debug.Log("Dungeon " + dungeonId + " is already finished!");
+        }
     }
 
     // This method is called when the Start button is clicked
@@ -104,6 +120,8 @@ public class DungeonGameController : MonoBehaviour
         {
             Debug.Log("You win! All enemies defeated.");
             winPanel.SetActive(true); // Show the win panel
+            PlayerPrefs.SetInt(GetDungeonFinishedKey(dungeonId), 1); // Save that this dungeon is finished
+            PlayerPrefs.Save();  // Save the PlayerPrefs
         }
         else
         {
