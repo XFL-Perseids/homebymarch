@@ -18808,6 +18808,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coop Condition Panel
       objectReference: {fileID: 0}
+    - target: {fileID: 4207336223299379446, guid: fab8a7037cb5c9343af156b41981ca65, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7000182912068664562, guid: fab8a7037cb5c9343af156b41981ca65, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
